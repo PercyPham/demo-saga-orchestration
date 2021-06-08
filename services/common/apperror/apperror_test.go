@@ -1,11 +1,11 @@
 package apperror_test
 
 import (
-	"backend/services/common/apperror"
 	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"services.common/apperror"
 )
 
 func TestNewAppError(t *testing.T) {

@@ -1,8 +1,6 @@
 package main
 
-import (
-	"backend/services/order/internal/orderadapter/http/rest"
-)
+import "services.order/internal/orderadapter/http/rest"
 
 func main() {
 	rest.RunOrderServer()

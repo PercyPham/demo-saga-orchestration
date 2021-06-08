@@ -1,10 +1,10 @@
 package orderdomain_test
 
 import (
-	"backend/services/order/internal/orderdomain"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"services.order/internal/orderdomain"
 )
 
 func TestNewOrderWithEmptyVendor(t *testing.T) {
