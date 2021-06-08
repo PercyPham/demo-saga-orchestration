@@ -10,6 +10,8 @@ all:
 	@echo "   dev_prep     prepare and run infra services in local environment"
 	@echo "   dev_stop     stop infra services in local environment"
 	@echo "   dev_clean    stop and remove infra services in local environment"
+	@echo ""
+	@echo "   run_order    run order service"
 	@echo "\n"
 
 dbgui:
@@ -24,5 +26,8 @@ dev_stop:
 dev_clean:
 	@docker compose -f ./deployments/dev/docker-compose.dev.yaml down
 	@docker volume prune -f
+
+run_order:
+	@go run services/order/cmd/server/main.go
 
 .PHONY: all dbgui dev_prep dev_stop dev_clean
