@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  message-broker:
+    image: rabbitmq:3.8.16-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - 5672:5672
+    networks:
+      - xemmenu-network
+
+  sqldb:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+    volumes:
+      - volume_sqldb_data:/var/lib/postgresql/data
+    networks:
+      - xemmenu-network
+
+  sqldb-gui:
+    image: dpage/pgadmin4:5
+    restart: always
+    depends_on:
+      - sqldb
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@xemmenu.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_CONFIG_DATA_DIR: "'/var/lib/pgadmin'"
+    ports:
+      - 8000:80
+    volumes:
+      - volume_sqldb_gui_data:/var/lib/pgadmin
+      - ./pgadmin/config/servers.json:/pgadmin4/servers.json:ro
+    networks:
+      - xemmenu-network
+
+networks:
+  xemmenu-network:
+    driver: bridge
+
+volumes:
+  volume_sqldb_data:
+  volume_sqldb_gui_data:
