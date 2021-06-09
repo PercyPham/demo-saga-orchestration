@@ -28,6 +28,6 @@ dev_clean:
 	@docker volume prune -f
 
 run_order:
-	@go run services/order/cmd/server/main.go
+	@cd services/order && go run cmd/server/main.go
 
 .PHONY: all dbgui dev_prep dev_stop dev_clean

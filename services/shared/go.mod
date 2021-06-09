@@ -1,4 +1,4 @@
-module services.common
+module services.shared
 
 go 1.16
 

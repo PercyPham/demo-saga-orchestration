@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"services.common/apperror"
+	"services.shared/apperror"
 )
 
 func TestNewAppError(t *testing.T) {
