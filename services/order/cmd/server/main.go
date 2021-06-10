@@ -12,9 +12,14 @@ func main() {
 
 	repo, err := postgresql.Connect(config.PostgreSQL())
 	if err != nil {
-		log.Fatal("cannot connect to Postgres DB")
+		log.Fatal("cannot connect to Postgres DB:", err)
 		panic(err)
 	}
 
-	rest.RunOrderServer(repo)
+	orderRestApiServer := rest.NewOrderRestApiServer(log, repo)
+
+	err = orderRestApiServer.Run()
+	if err != nil {
+		log.Fatal("cannot run order rest api server:", err)
+	}
 }

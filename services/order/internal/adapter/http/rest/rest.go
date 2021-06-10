@@ -1,38 +1,35 @@
 package rest
 
 import (
-	"os"
-	"services.order/internal/appservice/health_check"
-	"services.order/internal/appservice/port"
-
 	"github.com/gin-gonic/gin"
+	"services.order/internal/adapter/http/rest/response"
+	"services.order/internal/appservice/port"
+	"services.order/internal/common/config"
+	"services.shared/logger"
+	"strconv"
 )
 
-func RunOrderServer(repo port.Repo) {
-	r := gin.Default()
-
-	if getENV("APP_ENV", "development") != "development" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	api := r.Group("/order-service/api")
-
-	api.GET("/health", func(c *gin.Context) {
-		healthCheckService := health_check.NewHealthCheckService(repo)
-		err := healthCheckService.Check()
-		if err != nil {
-			c.JSON(200, gin.H{"message":"OK"})
-			return
-		}
-		c.JSON(200, gin.H{"error":err.Error()})
-	})
-
-	r.Run(":" + getENV("ORDER_SERVICE_PORT", "5000"))
+func NewOrderRestApiServer(log logger.Logger, repo port.Repo) *OrderRestApiServer {
+	responder := response.New(log)
+	return &OrderRestApiServer{ responder, repo}
 }
 
-func getENV(env, defaultVal string) string {
-	if os.Getenv(env) != "" {
-		return os.Getenv(env)
+type OrderRestApiServer struct {
+	response response.Responder
+	repo port.Repo
+}
+
+func (s *OrderRestApiServer) Run() error {
+	r := gin.Default()
+	if config.App().ENV != "development" {
+		gin.SetMode(gin.ReleaseMode)
 	}
-	return defaultVal
+	api := r.Group("/api")
+	s.addRouteHandlers(api)
+	return r.Run(":" + strconv.Itoa(config.App().PORT))
+}
+
+func (s *OrderRestApiServer) addRouteHandlers(api *gin.RouterGroup) {
+	api.GET("/health", s.checkHealth)
+	api.POST("/orders", s.createOrder)
 }
