@@ -55,8 +55,8 @@ func (l *log) Fatal(args ...interface{}) {
 
 func (l *log) printLog(level logger.LogLevel, color string, args []interface{}) {
 	if level >= l.level {
-		fmt.Printf(color, "["+logger.LevelText(level)+"] ")
-		fmt.Printf(color, args...)
-		fmt.Println("")
+		tag := fmt.Sprintf("[%s]", logger.LevelText(level))
+		args := append([]interface{}{tag}, args...)
+		fmt.Printf(color, fmt.Sprintln(args...))
 	}
 }
