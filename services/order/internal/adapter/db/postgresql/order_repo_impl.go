@@ -2,6 +2,7 @@ package postgresql
 
 import (
 	"encoding/json"
+
 	"services.order/internal/domain"
 	"services.shared/apperror"
 )

@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"services.shared/apperror"
 	"strconv"
+
+	"services.shared/apperror"
 )
 
 type Order struct {
