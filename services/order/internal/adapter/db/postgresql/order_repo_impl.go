@@ -6,7 +6,6 @@ import (
 	"services.shared/apperror"
 )
 
-
 type Order struct {
 	ID        int64  `json:"id"`
 	State     string `json:"state"`
@@ -51,4 +50,13 @@ func (r *repoImpl) CreateOrder(order *domain.Order) error {
 	}
 	order.ID = oGorm.ID
 	return nil
+}
+
+func (r *repoImpl) FindOrderByID(id int64) *domain.Order {
+	oGorm := new(Order)
+	result := r.db.Where("id = ?", id).First(oGorm)
+	if result.Error != nil {
+		return nil
+	}
+	return oGorm.toDomainOrder()
 }

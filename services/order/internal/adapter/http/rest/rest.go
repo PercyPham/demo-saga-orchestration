@@ -11,12 +11,12 @@ import (
 
 func NewOrderRestApiServer(log logger.Logger, repo port.Repo) *OrderRestApiServer {
 	responder := response.New(log)
-	return &OrderRestApiServer{ responder, repo}
+	return &OrderRestApiServer{responder, repo}
 }
 
 type OrderRestApiServer struct {
 	response response.Responder
-	repo port.Repo
+	repo     port.Repo
 }
 
 func (s *OrderRestApiServer) Run() error {
@@ -31,5 +31,7 @@ func (s *OrderRestApiServer) Run() error {
 
 func (s *OrderRestApiServer) addRouteHandlers(api *gin.RouterGroup) {
 	api.GET("/health", s.checkHealth)
+
 	api.POST("/orders", s.createOrder)
+	api.GET("/orders/:id", s.findOrderByID)
 }
