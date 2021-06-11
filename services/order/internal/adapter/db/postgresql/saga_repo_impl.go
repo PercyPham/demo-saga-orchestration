@@ -49,7 +49,7 @@ func (r *repoImpl) RecordMessageAsProcessed(id string) error {
 	return nil
 }
 
-func (r *repoImpl) BeginTransaction() saga.RepoTransaction {
+func (r *repoImpl) BeginTransaction() saga.Transaction {
 	txDB := r.db.Begin()
 	txRepo := &repoImpl{txDB}
 	return &repoTransaction{txDB, txRepo}

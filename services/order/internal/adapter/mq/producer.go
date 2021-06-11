@@ -7,7 +7,7 @@ import (
 	"services.shared/apperror"
 )
 
-func NewProducer(conn *amqp.Connection) saga.MQProducer {
+func NewProducer(conn *amqp.Connection) saga.Producer {
 	return &producer{conn}
 }
 

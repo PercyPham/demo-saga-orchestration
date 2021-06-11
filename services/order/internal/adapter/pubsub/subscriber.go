@@ -6,7 +6,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func NewSubscriber(conn *amqp.Connection) saga.PSSubscriber {
+func NewSubscriber(conn *amqp.Connection) saga.Subscriber {
 	return &subscriber{conn}
 }
 

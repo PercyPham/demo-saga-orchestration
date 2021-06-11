@@ -27,8 +27,8 @@ func main() {
 
 	sagaManager, err := saga.NewManager(saga.Config{
 		SagaRepo:       repo,
-		MQProducer:     mq.NewProducer(outflowConn),
-		MQConsumer:     mq.NewConsumer(inflowConn),
+		Producer:       mq.NewProducer(outflowConn),
+		Consumer:       mq.NewConsumer(inflowConn),
 		CommandChannel: config.Saga().CommandChannel,
 		ReplyChannel:   config.Saga().ReplyChannel,
 	})

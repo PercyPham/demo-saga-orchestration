@@ -9,13 +9,13 @@ import (
 	"github.com/percypham/saga-go/msg"
 )
 
-func NewCreateOrderService(r port.Repo, p saga.PSPublisher) *CreateOrderService {
+func NewCreateOrderService(r port.Repo, p saga.Publisher) *CreateOrderService {
 	return &CreateOrderService{r, p}
 }
 
 type CreateOrderService struct {
 	repo      port.Repo
-	publisher saga.PSPublisher
+	publisher saga.Publisher
 }
 
 type CreateOrderInput struct {
@@ -35,8 +35,8 @@ func (s *CreateOrderService) CreateOrder(input CreateOrderInput) (*domain.Order,
 		return nil, apperror.WithLog(err, "create order in database")
 	}
 
-	//orderCreatedEvent := newOrderCreatedEvent(order.ID)
-	//s.publisher.Publish(orderCreatedEvent.Topic(), orderCreatedEvent)
+	// orderCreatedEvent := newOrderCreatedEvent(order.ID)
+	// s.publisher.Publish(orderCreatedEvent.Topic(), orderCreatedEvent)
 
 	return order, nil
 }

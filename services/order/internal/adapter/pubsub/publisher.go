@@ -10,7 +10,7 @@ import (
 // TODO: cloudamqp.com/blog/part4-rabbitmq-13-common-errors.html
 //  + reduce open/close channel repeatedly too many times
 
-func NewPublisher(conn *amqp.Connection) saga.PSPublisher {
+func NewPublisher(conn *amqp.Connection) saga.Publisher {
 	return &publisher{conn}
 }
 
