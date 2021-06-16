@@ -20,19 +20,20 @@ func main() {
 		panic(err)
 	}
 
-	outflowConn, inflowConn, _, err := rabbitmq.Connect(config.RabbitMQ())
+	inflowConn, _, err := rabbitmq.Connect(config.RabbitMQ())
 	if err != nil {
-		log.Fatal("cannot connect to RabbitMQ:", err)
-		panic(err)
+		panic("cannot connect MQ Inflow Connection: " + err.Error())
 	}
 
-	mqProducer := mq.NewProducer(outflowConn)
-	mqConsumer := mq.NewConsumer(inflowConn)
+	outflowConn, _, err := rabbitmq.Connect(config.RabbitMQ())
+	if err != nil {
+		panic("cannot connect MQ Outflow Connection: " + err.Error())
+	}
 
 	sagaManager, err := saga.NewManager(saga.Config{
 		SagaRepo:       repo,
-		Producer:       mqProducer,
-		Consumer:       mqConsumer,
+		Producer:       mq.NewProducer(outflowConn),
+		Consumer:       mq.NewConsumer(inflowConn),
 		CommandChannel: config.Saga().CommandChannel,
 		ReplyChannel:   config.Saga().ReplyChannel,
 	})

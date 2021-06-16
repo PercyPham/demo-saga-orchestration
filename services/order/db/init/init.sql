@@ -1,10 +1,6 @@
 -- POSTGRES DB
 
-CREATE DATABASE xemmenu_order_service_db;
-GO
-
-USE xemmenu_order_service_db;
-GO
+CREATE DATABASE order_service;
 
 CREATE TABLE orders(
   id SERIAL PRIMARY KEY,
