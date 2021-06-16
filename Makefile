@@ -12,6 +12,7 @@ all:
 	@echo "   dev_clean    stop and remove infra services in local environment"
 	@echo ""
 	@echo "   run_order    run order service"
+	@echo "   run_kitchen  run kitchen service"
 	@echo "\n"
 
 dbgui:
@@ -30,4 +31,7 @@ dev_clean:
 run_order:
 	@cd services/order && make run
 
-.PHONY: all dbgui dev_prep dev_stop dev_clean
+run_kitchen:
+	@cd services/kitchen && make run
+
+.PHONY: all dbgui dev_prep dev_stop dev_clean run_order run_kitchen
