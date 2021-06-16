@@ -1,23 +1,24 @@
 package rest
 
 import (
+	"services.shared/rest_response"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/percypham/saga-go"
-	"services.order/internal/adapter/http/rest/response"
 	"services.order/internal/appservice/port"
 	"services.order/internal/common/config"
 	"services.shared/logger"
 )
 
 func NewOrderRestApiServer(log logger.Logger, repo port.Repo, sagaManager saga.Manager) *OrderRestApiServer {
-	responder := response.New(log)
+	responder := rest_response.New(log)
+	responder.SetLogTrace(config.App().ENV == "development")
 	return &OrderRestApiServer{responder, repo, sagaManager}
 }
 
 type OrderRestApiServer struct {
-	response    response.Responder
+	response    rest_response.Responder
 	repo        port.Repo
 	sagaManager saga.Manager
 }

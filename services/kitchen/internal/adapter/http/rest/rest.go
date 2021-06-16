@@ -1,22 +1,22 @@
 package rest
 
 import (
-	"services.kitchen/internal/adapter/http/rest/response"
 	"services.kitchen/internal/common/config"
 	"services.shared/logger"
+	"services.shared/rest_response"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func NewKitchenRestApiServer(log logger.Logger) *KitchenRestApiServer {
-	responder := response.New(log)
+	responder := rest_response.New(log)
 	responder.SetLogTrace(config.App().ENV == "development")
 	return &KitchenRestApiServer{responder}
 }
 
 type KitchenRestApiServer struct {
-	response response.Responder
+	response rest_response.Responder
 }
 
 func (s *KitchenRestApiServer) Run() error {

@@ -1,15 +1,21 @@
-package response
+package rest_response
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"services.shared/apperror"
 	"services.shared/logger"
 )
 
+// JSONResponder is interface for REST api implementation to response JSON
+//  use *gin.Context
+type JSONResponder interface {
+	// JSON serializes the given struct as JSON into the response body. It also sets the Content-Type as "application/json".
+	JSON(code int, obj interface{})
+}
+
 type Responder interface {
-	Success(c *gin.Context, data interface{})
-	Error(c *gin.Context, err error)
+	Success(c JSONResponder, data interface{})
+	Error(c JSONResponder, err error)
 	SetLogTrace(logTrace bool)
 }
 
@@ -27,7 +33,7 @@ func (r *responder) SetLogTrace(v bool) {
 }
 
 // Success responses success data to client
-func (r *responder) Success(c *gin.Context, data interface{}) {
+func (r *responder) Success(c JSONResponder, data interface{}) {
 	payload := successResponse{data}
 	r.response(c, payload)
 }
@@ -37,7 +43,7 @@ type successResponse struct {
 }
 
 // Error responses error to client
-func (r *responder) Error(c *gin.Context, err error) {
+func (r *responder) Error(c JSONResponder, err error) {
 	var payload errorResponse
 
 	appErr, ok := err.(*apperror.AppError)
@@ -75,6 +81,6 @@ type errorContent struct {
 	Message string `json:"message"`
 }
 
-func (r *responder) response(c *gin.Context, payload interface{}) {
+func (r *responder) response(c JSONResponder, payload interface{}) {
 	c.JSON(http.StatusOK, payload)
 }
