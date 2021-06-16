@@ -14,7 +14,7 @@ func (s *OrderRestApiServer) createOrder(c *gin.Context) {
 		return
 	}
 
-	createOrderService := create_order.NewCreateOrderService(s.repo, nil)
+	createOrderService := create_order.NewCreateOrderService(s.repo, s.sagaManager)
 	order, err := createOrderService.CreateOrder(body)
 	if err != nil {
 		s.response.Error(c, err)

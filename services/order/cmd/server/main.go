@@ -6,6 +6,7 @@ import (
 	"services.order/internal/adapter/http/rest"
 	"services.order/internal/adapter/mq"
 	"services.order/internal/adapter/rabbitmq"
+	"services.order/internal/appservice"
 	"services.order/internal/common/config"
 	"services.shared/logger/consolelogger"
 )
@@ -25,10 +26,13 @@ func main() {
 		panic(err)
 	}
 
+	mqProducer := mq.NewProducer(outflowConn)
+	mqConsumer := mq.NewConsumer(inflowConn)
+
 	sagaManager, err := saga.NewManager(saga.Config{
 		SagaRepo:       repo,
-		Producer:       mq.NewProducer(outflowConn),
-		Consumer:       mq.NewConsumer(inflowConn),
+		Producer:       mqProducer,
+		Consumer:       mqConsumer,
 		CommandChannel: config.Saga().CommandChannel,
 		ReplyChannel:   config.Saga().ReplyChannel,
 	})
@@ -37,12 +41,11 @@ func main() {
 		panic(err)
 	}
 
-	//sagaManager.RegisterCommandHandlers(handlers)
-	//sagaManager.RegisterStateMachines(machines)
+	appservice.RegisterStateMachines(sagaManager)
 
 	go sagaManager.Serve()
 
-	orderRestApiServer := rest.NewOrderRestApiServer(log, repo)
+	orderRestApiServer := rest.NewOrderRestApiServer(log, repo, sagaManager)
 
 	err = orderRestApiServer.Run()
 	if err != nil {

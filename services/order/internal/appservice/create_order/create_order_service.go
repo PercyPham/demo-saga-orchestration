@@ -5,17 +5,15 @@ import (
 	"services.order/internal/appservice/port"
 	"services.order/internal/domain"
 	"services.shared/apperror"
-
-	"github.com/percypham/saga-go/msg"
 )
 
-func NewCreateOrderService(r port.Repo, p saga.Publisher) *CreateOrderService {
-	return &CreateOrderService{r, p}
+func NewCreateOrderService(r port.Repo, sagaManager saga.Manager) *CreateOrderService {
+	return &CreateOrderService{r, sagaManager}
 }
 
 type CreateOrderService struct {
-	repo      port.Repo
-	publisher saga.Publisher
+	repo        port.Repo
+	sagaManager saga.Manager
 }
 
 type CreateOrderInput struct {
@@ -35,13 +33,15 @@ func (s *CreateOrderService) CreateOrder(input CreateOrderInput) (*domain.Order,
 		return nil, apperror.WithLog(err, "create order in database")
 	}
 
-	// orderCreatedEvent := newOrderCreatedEvent(order.ID)
-	// s.publisher.Publish(orderCreatedEvent.Topic(), orderCreatedEvent)
+	createOrderSaga, err := newCreateOrderSaga(order)
+	if err != nil {
+		return nil, apperror.WithLog(err, "create CreateOrderSaga instance")
+	}
+
+	err = s.sagaManager.ExecuteFirstStep(*createOrderSaga)
+	if err != nil {
+		return nil, apperror.WithLog(err, "execute first step in CreateOrderSaga")
+	}
 
 	return order, nil
-}
-
-func newOrderCreatedEvent(orderID int64) msg.Event {
-	// TODO
-	return nil
 }

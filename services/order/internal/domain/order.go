@@ -12,7 +12,12 @@ type Order struct {
 	Vendor    string           `json:"vendor"`
 	Location  string           `json:"location"`
 	LineItems []*OrderLineItem `json:"line_items"`
+	Total     int64            `json:"total"`
 }
+
+const (
+	OrderStateInit = "init"
+)
 
 type OrderLineItem struct {
 	ID       string `json:"id"`
@@ -48,7 +53,7 @@ func (o *Order) validate() error {
 
 func NewOrder(vendor, location string, items ...*OrderLineItem) (*Order, error) {
 	order := &Order{
-		State:     "init",
+		State:     OrderStateInit,
 		Vendor:    vendor,
 		Location:  location,
 		LineItems: items,

@@ -3,7 +3,7 @@
 all:
 	@echo "\nUsage:  make <command>"
 	@echo "\nCommands:"
-	@echo "   run          run Order serive"
+	@echo "   run          run Order service"
 	@echo "\n"
 
 run:
