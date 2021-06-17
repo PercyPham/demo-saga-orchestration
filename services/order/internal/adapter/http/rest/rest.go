@@ -28,7 +28,7 @@ func (s *OrderRestApiServer) Run() error {
 	if config.App().ENV != "development" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	api := r.Group("/api")
+	api := r.Group("/order-service/api")
 	s.addRouteHandlers(api)
 	return r.Run(":" + strconv.Itoa(config.App().PORT))
 }
