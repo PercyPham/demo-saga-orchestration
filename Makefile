@@ -5,7 +5,8 @@ all:
 	@echo "\nCommands:"
 	@echo "   all          list all commands"
 	@echo ""
-	@echo "   dbgui        open DB GUI (required dev prep - MacOS)"
+	@echo "   dbgui        open DB GUI (password: xemmenu) (required dev_prep - MacOS)"
+	@echo "   mqgui        open RabbitMQ Management GUI (user: xemmenu, password: xemmenu) (required dev_prep - MacOS)"
 	@echo ""
 	@echo "   dev_prep     prepare and run infra services in local environment"
 	@echo "   dev_stop     stop infra services in local environment"
@@ -17,6 +18,9 @@ all:
 
 dbgui:
 	@open http://localhost:8000
+
+mqgui:
+	@open http://localhost:15672
 
 dev_prep:
 	@docker compose -f ./deployments/dev/docker-compose.dev.yaml up -d
@@ -34,4 +38,4 @@ run_order:
 run_kitchen:
 	@cd services/kitchen && make run
 
-.PHONY: all dbgui dev_prep dev_stop dev_clean run_order run_kitchen
+.PHONY: all dbgui mqgui dev_prep dev_stop dev_clean run_order run_kitchen

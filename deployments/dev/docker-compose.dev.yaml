@@ -2,13 +2,14 @@ version: "3.9"
 
 services:
   message-broker:
-    image: rabbitmq:3.8.16-alpine
+    image: rabbitmq:3.8.17-management-alpine
     restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_USER: xemmenu
+      RABBITMQ_DEFAULT_PASS: xemmenu
     ports:
       - 5672:5672
+      - 15672:15672
     networks:
       - xemmenu-network
 
@@ -32,7 +33,7 @@ services:
       - sqldb
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@xemmenu.com
-      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_DEFAULT_PASSWORD: xemmenu
       PGADMIN_CONFIG_SERVER_MODE: "False"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
       PGADMIN_CONFIG_DATA_DIR: "'/var/lib/pgadmin'"
