@@ -24,3 +24,7 @@ func (s *FindOrderService) FindByID(id int64) (*domain.Order, error) {
 
 	return order, nil
 }
+
+func (s *FindOrderService) FindAll() ([]*domain.Order, error) {
+	return s.orderRepo.FindOrders()
+}

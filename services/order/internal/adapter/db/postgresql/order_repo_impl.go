@@ -61,3 +61,16 @@ func (r *repoImpl) FindOrderByID(id int64) *domain.Order {
 	}
 	return oGorm.toDomainOrder()
 }
+
+func (r *repoImpl) FindOrders() ([]*domain.Order, error) {
+	gormOrders := make([]*Order, 0)
+	result := r.db.Find(&gormOrders)
+	if result.Error != nil {
+		return nil, apperror.WithLog(result.Error, "find orders using gorm")
+	}
+	orders := make([]*domain.Order, result.RowsAffected)
+	for i, gormOrder := range gormOrders {
+		orders[i] = gormOrder.toDomainOrder()
+	}
+	return orders, nil
+}

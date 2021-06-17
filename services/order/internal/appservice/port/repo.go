@@ -18,4 +18,7 @@ type OrderRepo interface {
 
 	// FindOrderByID finds and returns order in database, return nil if not found
 	FindOrderByID(id int64) *domain.Order
+	// FindOrders finds and returns orders
+	// 	TODO: pagination by param
+	FindOrders() ([]*domain.Order, error)
 }

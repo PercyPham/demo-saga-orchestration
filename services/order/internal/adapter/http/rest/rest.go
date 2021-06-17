@@ -37,5 +37,6 @@ func (s *OrderRestApiServer) addRouteHandlers(api *gin.RouterGroup) {
 	api.GET("/health", s.checkHealth)
 
 	api.POST("/orders", s.createOrder)
+	api.GET("/orders", s.findAllOrders)
 	api.GET("/orders/:id", s.findOrderByID)
 }

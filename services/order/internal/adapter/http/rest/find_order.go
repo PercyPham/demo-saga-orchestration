@@ -23,3 +23,13 @@ func (s *OrderRestApiServer) findOrderByID(c *gin.Context) {
 	}
 	s.response.Success(c, order)
 }
+
+func (s *OrderRestApiServer) findAllOrders(c *gin.Context) {
+	findOrderService := find_order.NewFindOrderService(s.repo)
+	orders, err := findOrderService.FindAll()
+	if err != nil {
+		s.response.Error(c, err)
+		return
+	}
+	s.response.Success(c, orders)
+}
