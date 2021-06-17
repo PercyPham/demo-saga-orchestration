@@ -11,9 +11,11 @@ require (
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.10
 	services.shared v0.0.0
+	services.kitchen_contract v0.0.0
 )
 
 replace (
 	github.com/percypham/saga-go v0.0.0 => ../../../saga-go
 	services.shared v0.0.0 => ../shared
+	services.kitchen_contract v0.0.0 => ../kitchen_contract
 )

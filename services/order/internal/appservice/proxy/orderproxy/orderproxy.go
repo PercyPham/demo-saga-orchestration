@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	OrderServiceCommandChannel = "OrderService.CommandChannel"
+	OrderServiceCommandChannel = "OrderService.SagaCommandChannel"
 
 	CommandRejectOrder  = "RejectOrder"
 	CommandApproveOrder = "ApproveOrder"

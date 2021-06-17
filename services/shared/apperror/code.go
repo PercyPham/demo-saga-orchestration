@@ -13,6 +13,10 @@ const (
 	UnprocessableEntity = 422
 
 	InternalServerError = 500
+
+	InvalidEvent   = 1000
+	InvalidCommand = 1001
+	InvalidReply   = 1002
 )
 
 var statusText = map[int]string{
@@ -24,6 +28,10 @@ var statusText = map[int]string{
 	UnprocessableEntity: "Unprocessable Entity",
 
 	InternalServerError: "Internal Server Error",
+
+	InvalidEvent:   "Invalid Event",
+	InvalidCommand: "Invalid Command",
+	InvalidReply:   "Invalid Reply",
 }
 
 // StatusText returns a text for the app error code. It returns the empty

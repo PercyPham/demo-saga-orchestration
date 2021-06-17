@@ -6,6 +6,7 @@ import (
 	"services.kitchen/internal/adapter/http/rest"
 	"services.kitchen/internal/adapter/mq"
 	"services.kitchen/internal/adapter/rabbitmq"
+	"services.kitchen/internal/appservice"
 	"services.kitchen/internal/common/config"
 	"services.shared/logger/consolelogger"
 )
@@ -40,6 +41,8 @@ func main() {
 		log.Fatal("cannot create sagaManager:", err)
 		panic(err)
 	}
+
+	appservice.HandleCommands(sagaManager, repo)
 
 	go sagaManager.Serve()
 

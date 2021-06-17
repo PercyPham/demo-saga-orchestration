@@ -2,15 +2,15 @@ package postgresql
 
 import (
 	"fmt"
-	"github.com/percypham/saga-go"
 	"services.kitchen/internal/common/config"
+	"services.kitchen/internal/port"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-func Connect(cfg config.PostgreSQLConfig) (saga.Repo, error) {
+func Connect(cfg config.PostgreSQLConfig) (port.Repo, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Ho_Chi_Minh",
 		cfg.Host,

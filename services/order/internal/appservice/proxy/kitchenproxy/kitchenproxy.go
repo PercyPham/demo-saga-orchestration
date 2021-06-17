@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	KitchenServiceCommandChannel = "KitchenService.CommandChannel"
+	KitchenServiceCommandChannel = "KitchenService.SagaCommandChannel"
 
 	CommandCreateTicket  = "CreateTicket"
 	CommandRejectTicket  = "RejectTicket"

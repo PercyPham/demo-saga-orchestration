@@ -26,7 +26,7 @@ func newCreateOrderSaga(order *domain.Order) (*saga.Saga, error) {
 func NewCreateOrderStateMachine() saga.StateMachine {
 	m := new(createOrderStateMachine)
 	sm, err := saga.StateMachineBuilder().
-		ForSagaType(SagaTypeCreateOrder).
+		For(SagaTypeCreateOrder).
 		WithCompensation(m.rejectOrder).
 		InvokeParticipant(m.createTicket).
 		WithCompensation(m.rejectTicket).
@@ -102,8 +102,9 @@ func (m *createOrderStateMachine) approveOrder(sagaData []byte) (msg.Command, er
 	return approveOrderCommand, nil
 }
 
-func (m *createOrderStateMachine) deserialize(sagaData []byte) (order *domain.Order, err error) {
-	err = json.Unmarshal(sagaData, order)
+func (m *createOrderStateMachine) deserialize(sagaData []byte) (*domain.Order, error) {
+	order := new(domain.Order)
+	err := json.Unmarshal(sagaData, order)
 	if err != nil {
 		return nil, apperror.WithLog(err, "unmarshal sagaData to Order")
 	}
