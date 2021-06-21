@@ -23,8 +23,8 @@ type Command interface {
 }
 
 type CommandMeta struct {
-	Type         string
 	Destination  string
+	Type         string
 }
 
 type command struct {

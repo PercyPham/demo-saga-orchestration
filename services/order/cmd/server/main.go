@@ -7,6 +7,7 @@ import (
 	"services.order/internal/adapter/rabbitmq"
 	"services.order/internal/appservice"
 	"services.order/internal/common/config"
+	"services.order_contract"
 	"services.shared/logger/consolelogger"
 	"services.shared/saga"
 )
@@ -34,8 +35,8 @@ func main() {
 		SagaRepo:       repo,
 		Producer:       mq.NewProducer(outflowConn),
 		Consumer:       mq.NewConsumer(inflowConn),
-		CommandChannel: config.Saga().CommandChannel,
-		ReplyChannel:   config.Saga().ReplyChannel,
+		CommandChannel: order_contract.OrderServiceCommandChannel,
+		ReplyChannel:   order_contract.OrderServiceReplyChannel,
 	})
 	if err != nil {
 		log.Fatal("cannot create sagaManager:", err)

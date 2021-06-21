@@ -19,9 +19,11 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.11
+	services.kitchen_contract v0.0.0
 	services.shared v0.0.0
 )
 
 replace (
+	services.kitchen_contract v0.0.0 => ../kitchen_contract
 	services.shared v0.0.0 => ../shared
 )

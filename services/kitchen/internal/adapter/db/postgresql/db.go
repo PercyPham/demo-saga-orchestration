@@ -39,10 +39,8 @@ func (r *repoImpl) Ping() error {
 	if err != nil {
 		return err
 	}
-
 	if err := sqlDB.Ping(); err != nil {
 		return err
 	}
-
 	return nil
 }

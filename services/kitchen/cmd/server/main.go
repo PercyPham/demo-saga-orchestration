@@ -7,6 +7,7 @@ import (
 	"services.kitchen/internal/adapter/rabbitmq"
 	"services.kitchen/internal/appservice"
 	"services.kitchen/internal/common/config"
+	"services.kitchen_contract"
 	"services.shared/logger/consolelogger"
 	"services.shared/saga"
 )
@@ -34,8 +35,8 @@ func main() {
 		SagaRepo:       repo,
 		Producer:       mq.NewProducer(mqOutflowConn),
 		Consumer:       mq.NewConsumer(mqInflowConn),
-		CommandChannel: config.Saga().CommandChannel,
-		ReplyChannel:   config.Saga().ReplyChannel,
+		CommandChannel: kitchen_contract.KitchenServiceCommandChannel,
+		ReplyChannel:   kitchen_contract.KitchenServiceReplyChannel,
 	})
 	if err != nil {
 		log.Fatal("cannot create sagaManager:", err)
@@ -46,7 +47,7 @@ func main() {
 
 	go sagaManager.Serve()
 
-	orderRestApiServer := rest.NewKitchenRestApiServer(log)
+	orderRestApiServer := rest.NewKitchenRestApiServer(log, repo)
 
 	err = orderRestApiServer.Run()
 	if err != nil {

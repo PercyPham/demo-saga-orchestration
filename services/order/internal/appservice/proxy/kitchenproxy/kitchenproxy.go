@@ -1,64 +1,40 @@
 package kitchenproxy
 
 import (
-	"encoding/json"
-	"strconv"
-
+	"services.kitchen_contract/kitchen_command"
 	"services.order/internal/domain"
 	"services.shared/apperror"
 	"services.shared/saga/msg"
 )
 
-const (
-	KitchenServiceCommandChannel = "KitchenService.SagaCommandChannel"
-
-	CommandCreateTicket  = "CreateTicket"
-	CommandRejectTicket  = "RejectTicket"
-	CommandApproveTicket = "ApproveTicket"
-)
-
 func GenCreateTicketCommand(order *domain.Order) (msg.Command, error) {
-	meta := msg.CommandMeta{
-		Destination: KitchenServiceCommandChannel,
-		Type:        CommandCreateTicket,
+	lineItems := make([]kitchen_command.OrderLineItem, len(order.LineItems))
+	for i, item := range order.LineItems {
+		lineItems[i] = kitchen_command.OrderLineItem{
+			ID:   item.ID,
+			Qty:  item.Quantity,
+			Note: item.Note,
+		}
 	}
-	payload, err := (&createTicketPayload{
+
+	payload := kitchen_command.CreateTicketPayload{
 		OrderID:   order.ID,
 		Vendor:    order.Vendor,
-		LineItems: order.LineItems,
-	}).toJSON()
-	if err != nil {
-		return nil, apperror.WithLog(err, "convert payload to json")
+		LineItems: lineItems,
 	}
-	return msg.NewCommand(meta, payload), nil
-}
 
-type createTicketPayload struct {
-	OrderID   int64                   `json:"order_id"`
-	Vendor    string                  `json:"vendor"`
-	LineItems []*domain.OrderLineItem `json:"line_items"`
-}
-
-func (p *createTicketPayload) toJSON() (string, error) {
-	j, err := json.Marshal(p)
+	command, err := kitchen_command.NewCreateTicketCommand(payload)
 	if err != nil {
-		return "", apperror.WithLog(err, "marshal payload")
+		return nil, apperror.WithLog(err, "create CreateTicketCommand")
 	}
-	return string(j), nil
+
+	return command, nil
 }
 
 func GenRejectTicketCommand(orderID int64) msg.Command {
-	meta := msg.CommandMeta{
-		Destination: KitchenServiceCommandChannel,
-		Type:        CommandRejectTicket,
-	}
-	return msg.NewCommand(meta, strconv.FormatInt(orderID, 10))
+	return kitchen_command.NewRejectTicketCommand(orderID)
 }
 
 func GenApproveTicketCommand(orderID int64) msg.Command {
-	meta := msg.CommandMeta{
-		Destination: KitchenServiceCommandChannel,
-		Type:        CommandApproveTicket,
-	}
-	return msg.NewCommand(meta, strconv.FormatInt(orderID, 10))
+	return kitchen_command.NewApproveTicketCommand(orderID)
 }
