@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/percypham/saga-go"
 	"services.order/internal/adapter/db/postgresql"
 	"services.order/internal/adapter/http/rest"
 	"services.order/internal/adapter/mq"
@@ -9,6 +8,7 @@ import (
 	"services.order/internal/appservice"
 	"services.order/internal/common/config"
 	"services.shared/logger/consolelogger"
+	"services.shared/saga"
 )
 
 func main() {

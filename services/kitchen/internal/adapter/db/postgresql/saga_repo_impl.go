@@ -1,9 +1,9 @@
 package postgresql
 
 import (
-	"github.com/percypham/saga-go"
 	"gorm.io/gorm"
 	"services.shared/apperror"
+	"services.shared/saga"
 )
 
 func (r *repoImpl) CreateSaga(sagaInstance *saga.Saga) error {

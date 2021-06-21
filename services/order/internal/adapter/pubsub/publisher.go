@@ -1,10 +1,10 @@
 package pubsub
 
 import (
-	"github.com/percypham/saga-go"
-	"github.com/percypham/saga-go/msg"
 	"github.com/streadway/amqp"
 	"services.shared/apperror"
+	"services.shared/saga"
+	"services.shared/saga/msg"
 )
 
 // TODO: cloudamqp.com/blog/part4-rabbitmq-13-common-errors.html

@@ -1,8 +1,8 @@
 package appservice
 
 import (
-	"github.com/percypham/saga-go"
 	"services.order/internal/appservice/create_order"
+	"services.shared/saga"
 )
 
 var sagaStateMachines = []saga.StateMachine{

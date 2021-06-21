@@ -1,10 +1,10 @@
 package mq
 
 import (
-	"github.com/percypham/saga-go"
-	"github.com/percypham/saga-go/msg"
 	"github.com/streadway/amqp"
 	"services.shared/apperror"
+	"services.shared/saga"
+	"services.shared/saga/msg"
 )
 
 func NewProducer(conn *amqp.Connection) saga.Producer {

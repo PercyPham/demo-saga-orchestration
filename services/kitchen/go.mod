@@ -11,7 +11,6 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.6.0 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
-	github.com/percypham/saga-go v0.0.0
 	github.com/streadway/amqp v1.0.0
 	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
@@ -24,6 +23,5 @@ require (
 )
 
 replace (
-	github.com/percypham/saga-go v0.0.0 => ../../../saga-go
 	services.shared v0.0.0 => ../shared
 )

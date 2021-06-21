@@ -1,8 +1,9 @@
 package orderproxy
 
 import (
-	"github.com/percypham/saga-go/msg"
 	"strconv"
+
+	"services.shared/saga/msg"
 )
 
 const (

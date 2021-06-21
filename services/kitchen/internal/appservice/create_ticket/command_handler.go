@@ -3,10 +3,11 @@ package create_ticket
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/percypham/saga-go/msg"
+
 	"services.kitchen/internal/domain"
 	"services.kitchen/internal/port"
 	"services.shared/apperror"
+	"services.shared/saga/msg"
 )
 
 const CreateTicketCommand = "CreateTicket"
