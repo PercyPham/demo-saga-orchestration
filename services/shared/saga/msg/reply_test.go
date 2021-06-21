@@ -7,17 +7,19 @@ import (
 
 func TestNewReply(t *testing.T) {
 	meta := msg.ReplyMeta{
-		Command: "cmdID",
-		Success: true,
-		Type:    "eventType",
+		Type: "eventType",
 	}
 	reply := msg.NewReply(meta, "payload")
+	reply.SetSuccess(true)
+	reply.SetSagaID("sagaID")
+	reply.SetCommandID("cmdID")
 
 	tests := []struct {
 		expected interface{}
 		got      interface{}
 	}{
-		{"cmdID", reply.Command()},
+		{"cmdID", reply.CommandID()},
+		{"sagaID", reply.SagaID()},
 		{true, reply.Success()},
 		{"eventType", reply.Type()},
 		{"payload", reply.Payload()},

@@ -39,9 +39,9 @@ type event struct {
 	Message
 }
 
-func (e *event) Topic() string              { return e.GetHeader(HeaderEventTopic) }
-func (e *event) CorrelationID() string      { return e.GetHeader(HeaderEventCorrelationID) }
-func (e *event) Type() string               { return e.GetHeader(HeaderEventType) }
+func (e *event) Topic() string              { return e.Header(HeaderEventTopic) }
+func (e *event) CorrelationID() string      { return e.Header(HeaderEventCorrelationID) }
+func (e *event) Type() string               { return e.Header(HeaderEventType) }
 func (e *event) SetCorrelationID(id string) { e.SetHeader(HeaderEventCorrelationID, id) }
 
 func ValidateEvent(message Message) (Event, error) {

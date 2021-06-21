@@ -19,7 +19,7 @@ func TestNewMessage(t *testing.T) {
 	}{
 		{"id", message.ID()},
 		{"type", message.Type()},
-		{"val", message.GetHeader("key")},
+		{"val", message.Header("key")},
 		{"payload", message.Payload()},
 	}
 
@@ -41,7 +41,7 @@ func TestSetInfo(t *testing.T) {
 		got      string
 	}{
 		{"id", message.ID()},
-		{"val", message.GetHeader("key")},
+		{"val", message.Header("key")},
 		{"payload", message.Payload()},
 	}
 
@@ -76,8 +76,8 @@ func TestUnmarshalMessage(t *testing.T) {
 	if message == nil {
 		t.Errorf("expected message, got nil")
 	} else {
-		if message.GetHeader("key") != "val" {
-			t.Errorf("expected val, got %v", message.GetHeader("key"))
+		if message.Header("key") != "val" {
+			t.Errorf("expected val, got %v", message.Header("key"))
 		}
 		if message.Payload() != "payload" {
 			t.Errorf("expected payload, got %s", message.Payload())

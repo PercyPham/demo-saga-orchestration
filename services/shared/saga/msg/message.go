@@ -21,7 +21,7 @@ type Message interface {
 	Headers() map[string]string
 	Payload() string
 
-	GetHeader(key string) string
+	Header(key string) string
 
 	SetID(id string)
 	SetHeaders(map[string]string)
@@ -45,7 +45,7 @@ func (m *message) ID() string                           { return m.headers[Heade
 func (m *message) Type() string                         { return m.headers[HeaderMessageType] }
 func (m *message) Headers() map[string]string           { return m.headers }
 func (m *message) Payload() string                      { return m.payload }
-func (m *message) GetHeader(key string) string          { return m.headers[key] }
+func (m *message) Header(key string) string             { return m.headers[key] }
 func (m *message) SetID(id string)                      { m.headers[HeaderMessageID] = id }
 func (m *message) SetHeaders(headers map[string]string) { m.headers = headers }
 func (m *message) SetHeader(key, val string)            { m.headers[key] = val }
