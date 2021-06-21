@@ -33,8 +33,8 @@ type Repo interface {
 	UpdateSaga(*Saga) error
 	FindSagaByID(id string) *Saga
 
-	CheckIfMessageProcessed(id string) bool
-	RecordMessageAsProcessed(id string) error
+	CreateProcessedMessage(msg.Message) error
+	GetProcessedMessageByID(id string) msg.Message
 
 	BeginTransaction() Transaction
 }

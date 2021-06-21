@@ -2,7 +2,6 @@ package create_ticket
 
 import (
 	"encoding/json"
-	"fmt"
 	"services.kitchen/internal/domain"
 	"services.kitchen_contract/kitchen_command"
 
@@ -16,12 +15,6 @@ type CommandRepo interface {
 
 func CreateTicketCommandHandler(repo port.Repo) func(command msg.Command) error {
 	return func(command msg.Command) error {
-		if command.Type() != kitchen_command.CreateTicket {
-			errMsg := fmt.Sprintf("set up wrong handler for %s command, got %s handler",
-				command.Type(), kitchen_command.CreateTicket)
-			return apperror.New(apperror.InternalServerError, errMsg)
-		}
-
 		createTickerService := NewCreateTicketService(repo)
 		input, err := extractCreateTicketInputFromCommand(command)
 		if err != nil {
@@ -35,11 +28,6 @@ func CreateTicketCommandHandler(repo port.Repo) func(command msg.Command) error 
 
 		return nil
 	}
-}
-
-type CommandReplyMeta struct {
-	SagaID    string
-	CommandID string
 }
 
 func extractCreateTicketInputFromCommand(command msg.Command) (CreateTicketInput, error) {
@@ -57,10 +45,9 @@ func extractCreateTicketInputFromCommand(command msg.Command) (CreateTicketInput
 		}
 	}
 	return CreateTicketInput{
+		CommandID: command.ID(),
 		OrderID:   payload.OrderID,
 		Vendor:    payload.Vendor,
-		SagaID:    command.SagaID(),
-		CommandID: command.ID(),
 		LineItems: lineItems,
 	}, nil
 }

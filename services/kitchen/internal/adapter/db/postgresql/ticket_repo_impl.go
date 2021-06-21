@@ -8,10 +8,9 @@ import (
 
 type Ticket struct {
 	OrderID   int64  `json:"order_id" gorm:"primaryKey"`
-	Vendor    string `json:"vendor"`
-	SagaID    string `json:"saga_id"`
-	CommandID string `json:"command_id"`
 	Status    string `json:"status"`
+	CommandID string `json:"command_id"`
+	Vendor    string `json:"vendor"`
 	LineItems []byte `json:"line_items" sql:"type:json"`
 }
 
@@ -20,10 +19,9 @@ func (t *Ticket) toDomainTicket() *domain.Ticket {
 	_ = json.Unmarshal(t.LineItems, &lineItems)
 	return &domain.Ticket{
 		OrderID:   t.OrderID,
-		Vendor:    t.Vendor,
-		SagaID:    t.SagaID,
-		CommandID: t.CommandID,
 		Status:    t.Status,
+		CommandID: t.CommandID,
+		Vendor:    t.Vendor,
 		LineItems: lineItems,
 	}
 }
@@ -35,10 +33,9 @@ func convertTicketToGorm(t *domain.Ticket) (*Ticket, error) {
 	}
 	return &Ticket{
 		OrderID:   t.OrderID,
-		Vendor:    t.Vendor,
-		SagaID:    t.SagaID,
-		CommandID: t.CommandID,
 		Status:    t.Status,
+		CommandID: t.CommandID,
+		Vendor:    t.Vendor,
 		LineItems: lineItems,
 	}, nil
 }
@@ -75,4 +72,16 @@ func (r *repoImpl) FindTickets() ([]*domain.Ticket, error) {
 		ticket[i] = gormTicket.toDomainTicket()
 	}
 	return ticket, nil
+}
+
+func (r *repoImpl) UpdateTicket(ticket *domain.Ticket) error {
+	gormTicket, err := convertTicketToGorm(ticket)
+	if err != nil {
+		return apperror.WithLog(err, "convert domain ticket to gorm ticket")
+	}
+	result := r.db.Updates(gormTicket)
+	if result.Error != nil {
+		return apperror.WithLog(result.Error, "update ticket using gorm")
+	}
+	return nil
 }

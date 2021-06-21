@@ -47,7 +47,7 @@ func main() {
 
 	go sagaManager.Serve()
 
-	orderRestApiServer := rest.NewKitchenRestApiServer(log, repo)
+	orderRestApiServer := rest.NewKitchenRestApiServer(log, repo, sagaManager)
 
 	err = orderRestApiServer.Run()
 	if err != nil {

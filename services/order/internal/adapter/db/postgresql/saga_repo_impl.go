@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"services.shared/apperror"
 	"services.shared/saga"
+	"services.shared/saga/msg"
 )
 
 func (r *repoImpl) CreateSaga(sagaInstance *saga.Saga) error {
@@ -32,21 +33,38 @@ func (r *repoImpl) UpdateSaga(sagaInstance *saga.Saga) error {
 }
 
 type ProcessedMessage struct {
-	ID string `json:"id" gorm:"primaryKey"`
+	ID      string `json:"id"`
+	Message []byte `json:"message" sql:"type:json"`
 }
 
-func (r *repoImpl) CheckIfMessageProcessed(id string) bool {
-	pGorm := new(ProcessedMessage)
-	result := r.db.Where("id = ?", id).First(pGorm)
-	return result.Error == nil
-}
-
-func (r *repoImpl) RecordMessageAsProcessed(id string) error {
-	result := r.db.Create(&ProcessedMessage{id})
+func (r *repoImpl) CreateProcessedMessage(message msg.Message) error {
+	m, err := msg.Marshal(message)
+	if err != nil {
+		return apperror.WithLog(err, "marshal message to json")
+	}
+	processedMessage := &ProcessedMessage{
+		ID:      message.ID(),
+		Message: m,
+	}
+	result := r.db.Create(processedMessage)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "create ProcessedMessage "+id+" in db using gorm")
+		return apperror.WithLog(err, "create processed message using gorm")
 	}
 	return nil
+}
+
+func (r *repoImpl) GetProcessedMessageByID(id string) msg.Message {
+	processedMessage := new(ProcessedMessage)
+	result := r.db.Where("id = ?", id).First(processedMessage)
+	if result.Error != nil {
+		return nil
+	}
+	messageRaw := processedMessage.Message
+	message, err := msg.Unmarshal(messageRaw)
+	if err != nil {
+		return nil
+	}
+	return message
 }
 
 func (r *repoImpl) BeginTransaction() saga.Transaction {

@@ -5,20 +5,22 @@ import (
 	"services.kitchen/internal/port"
 	"services.shared/logger"
 	"services.shared/rest_response"
+	"services.shared/saga"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewKitchenRestApiServer(log logger.Logger, repo port.Repo) *KitchenRestApiServer {
+func NewKitchenRestApiServer(log logger.Logger, repo port.Repo, sagaManager saga.Manager) *KitchenRestApiServer {
 	responder := rest_response.New(log)
 	responder.SetLogTrace(config.App().ENV == "development")
-	return &KitchenRestApiServer{responder, repo}
+	return &KitchenRestApiServer{responder, repo, sagaManager}
 }
 
 type KitchenRestApiServer struct {
-	response rest_response.Responder
-	repo     port.Repo
+	response    rest_response.Responder
+	repo        port.Repo
+	sagaManager saga.Manager
 }
 
 func (s *KitchenRestApiServer) Run() error {
@@ -33,6 +35,8 @@ func (s *KitchenRestApiServer) Run() error {
 
 func (s *KitchenRestApiServer) addRouteHandlers(api *gin.RouterGroup) {
 	api.GET("/health", s.checkHealth)
+
 	api.GET("/tickets", s.findAllTickets)
 	api.GET("/tickets/:orderID", s.findTicketByOrderID)
+	api.POST("/tickets/:orderID/accept", s.acceptTicket)
 }

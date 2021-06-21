@@ -18,4 +18,6 @@ type TicketRepo interface {
 	// FindTickets finds and returns tickets
 	// 	TODO: pagination by param
 	FindTickets() ([]*domain.Ticket, error)
+
+	UpdateTicket(*domain.Ticket) error
 }

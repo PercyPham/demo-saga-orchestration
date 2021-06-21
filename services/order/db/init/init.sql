@@ -19,3 +19,8 @@ CREATE TABLE sagas(
     compensating BOOLEAN,
     data JSON
 );
+
+CREATE TABLE processed_messages(
+    id VARCHAR(255) PRIMARY KEY,
+    message JSON NOT NULL
+);

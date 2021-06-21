@@ -16,16 +16,12 @@ type CreateTicketService struct {
 
 type CreateTicketInput struct {
 	OrderID   int64
-	Vendor    string
-	SagaID    string
 	CommandID string
+	Vendor    string
 	LineItems []domain.LineItem
 }
 
 func (s *CreateTicketService) CreateTicket(input CreateTicketInput) error {
-	if input.SagaID == "" {
-		return apperror.New(apperror.InvalidCommand, "saga ID must not be empty")
-	}
 	if input.CommandID == "" {
 		return apperror.New(apperror.InvalidCommand, "command ID must not be empty")
 	}
@@ -39,9 +35,8 @@ func (s *CreateTicketService) CreateTicket(input CreateTicketInput) error {
 
 	ticket := domain.Ticket{
 		OrderID:   input.OrderID,
-		Vendor:    input.Vendor,
-		SagaID:    input.SagaID,
 		CommandID: input.CommandID,
+		Vendor:    input.Vendor,
 		Status:    domain.TicketStatusPending,
 		LineItems: input.LineItems,
 	}
