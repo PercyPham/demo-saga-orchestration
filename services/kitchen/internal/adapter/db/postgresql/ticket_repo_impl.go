@@ -63,3 +63,16 @@ func (r *repoImpl) FindTicketByOrderID(orderID int64) *domain.Ticket {
 	}
 	return tGorm.toDomainTicket()
 }
+
+func (r *repoImpl) FindTickets() ([]*domain.Ticket, error) {
+	gormTickets := make([]*Ticket, 0)
+	result := r.db.Find(&gormTickets)
+	if result.Error != nil {
+		return nil, apperror.WithLog(result.Error, "find tickets using gorm")
+	}
+	ticket := make([]*domain.Ticket, result.RowsAffected)
+	for i, gormTicket := range gormTickets {
+		ticket[i] = gormTicket.toDomainTicket()
+	}
+	return ticket, nil
+}
