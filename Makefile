@@ -14,6 +14,7 @@ all:
 	@echo ""
 	@echo "   run_order    run order service"
 	@echo "   run_kitchen  run kitchen service"
+	@echo "   run_payment  run payment service"
 	@echo "\n"
 
 dbgui:
@@ -38,4 +39,7 @@ run_order:
 run_kitchen:
 	@cd services/kitchen && make run
 
-.PHONY: all dbgui mqgui dev_prep dev_stop dev_clean run_order run_kitchen
+run_payment:
+	@cd services/payment && make run
+
+.PHONY: all dbgui mqgui dev_prep dev_stop dev_clean run_order run_kitchen run_payment

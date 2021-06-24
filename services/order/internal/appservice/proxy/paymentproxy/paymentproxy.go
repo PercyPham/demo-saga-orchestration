@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	PaymentServiceCommandChannel = "PaymentService.SagaCommandChannel"
+	PaymentServiceCommandChannel = "PaymentService.CommandChannel"
 
 	CommandAuthorizePayment = "AuthorizePayment"
 )
