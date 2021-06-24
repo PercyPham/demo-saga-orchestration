@@ -5,6 +5,7 @@ import (
 	"services.payment/internal/adapter/http/rest"
 	"services.payment/internal/adapter/mq"
 	"services.payment/internal/adapter/rabbitmq"
+	"services.payment/internal/appservice"
 	"services.payment/internal/common/config"
 	"services.payment_contract"
 	"services.shared/logger/consolelogger"
@@ -41,6 +42,8 @@ func main() {
 		log.Fatal("cannot create sagaManager:", err)
 		panic(err)
 	}
+
+	appservice.HandleCommands(sagaManager, repo)
 
 	go sagaManager.Serve()
 
