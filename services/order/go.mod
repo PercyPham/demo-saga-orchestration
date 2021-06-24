@@ -11,11 +11,13 @@ require (
 	gorm.io/gorm v1.21.10
 	services.kitchen_contract v0.0.0
 	services.order_contract v0.0.0
+	services.payment_contract v0.0.0
 	services.shared v0.0.0
 )
 
 replace (
 	services.kitchen_contract v0.0.0 => ../kitchen_contract
 	services.order_contract v0.0.0 => ../order_contract
+	services.payment_contract v0.0.0 => ../payment_contract
 	services.shared v0.0.0 => ../shared
 )

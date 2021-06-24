@@ -78,10 +78,7 @@ func (m *createOrderStateMachine) authorizePayment(sagaData []byte) (msg.Command
 	if err != nil {
 		return nil, apperror.WithLog(err, "deserialize saga data")
 	}
-	authorizePaymentCommand, err := paymentproxy.GenAuthorizePaymentCommand(order)
-	if err != nil {
-		return nil, apperror.WithLog(err, "generate AuthorizePayment command")
-	}
+	authorizePaymentCommand := paymentproxy.GenAuthorizePaymentCommand(order)
 	return authorizePaymentCommand, nil
 }
 
