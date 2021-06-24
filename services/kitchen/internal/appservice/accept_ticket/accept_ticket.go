@@ -29,7 +29,7 @@ func (s *AcceptTicketService) AcceptTicketWithOrderID(orderID int64) error {
 	}
 
 	if ticket.Status != domain.TicketStatusPending {
-		return apperror.New(apperror.NotAcceptable, "ticket's status is not in PENDING, current is "+ticket.Status)
+		return apperror.New(apperror.NotAcceptable, "cannot change ticket status to ACCEPTED, current status is "+ticket.Status)
 	}
 
 	ticket.Status = domain.TicketStatusAccepted

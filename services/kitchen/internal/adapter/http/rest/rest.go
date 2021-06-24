@@ -39,4 +39,5 @@ func (s *KitchenRestApiServer) addRouteHandlers(api *gin.RouterGroup) {
 	api.GET("/tickets", s.findAllTickets)
 	api.GET("/tickets/:orderID", s.findTicketByOrderID)
 	api.POST("/tickets/:orderID/accept", s.acceptTicket)
+	api.POST("/tickets/:orderID/reject", s.rejectTicket)
 }
