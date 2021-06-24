@@ -47,22 +47,18 @@ func (r *responder) Error(c JSONResponder, err error) {
 	var payload errorResponse
 
 	appErr, ok := err.(*apperror.AppError)
-	if ok {
-		if r.logTrace || appErr.Code() == apperror.InternalServerError {
-			r.log.Error(appErr.Trace())
-		}
-		payload = newErrorResponse(int(appErr.Code()), apperror.StatusText(appErr.Code()), appErr.Message())
-		r.response(c, payload)
-		return
+	if !ok {
+		appErr = apperror.WithLog(err, "")
 	}
 
-	r.log.Error(apperror.WithLog(err, "").Trace())
+	if r.logTrace || appErr.Code() == apperror.InternalServerError {
+		r.log.Error(appErr.Trace())
+	}
 	payload = newErrorResponse(
-		int(apperror.InternalServerError),
-		apperror.StatusText(apperror.InternalServerError),
-		"internal server error",
+		appErr.Code(),
+		apperror.StatusText(appErr.Code()),
+		appErr.Message(),
 	)
-
 	r.response(c, payload)
 }
 
