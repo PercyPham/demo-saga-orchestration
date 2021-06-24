@@ -1,30 +1,15 @@
 package orderproxy
 
 import (
-	"strconv"
-
+	"services.order_contract/order_command"
 	"services.shared/saga/msg"
 )
 
-const (
-	OrderServiceCommandChannel = "OrderService.SagaCommandChannel"
-
-	CommandRejectOrder  = "RejectOrder"
-	CommandApproveOrder = "ApproveOrder"
-)
 
 func GenRejectOrderCommand(orderID int64) msg.Command {
-	meta := msg.CommandMeta{
-		Destination: OrderServiceCommandChannel,
-		Type:        CommandRejectOrder,
-	}
-	return msg.NewCommand(meta, strconv.FormatInt(orderID, 10))
+	return order_command.NewRejectOrderCommand(orderID)
 }
 
 func GenApproveOrderCommand(orderID int64) msg.Command {
-	meta := msg.CommandMeta{
-		Destination: OrderServiceCommandChannel,
-		Type:        CommandApproveOrder,
-	}
-	return msg.NewCommand(meta, strconv.FormatInt(orderID, 10))
+	return order_command.NewApproveOrderCommand(orderID)
 }

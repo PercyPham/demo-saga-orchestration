@@ -16,7 +16,7 @@ type Order struct {
 }
 
 const (
-	OrderStateInit = "init"
+	OrderStatePending = "PENDING"
 )
 
 type OrderLineItem struct {
@@ -53,7 +53,7 @@ func (o *Order) validate() error {
 
 func NewOrder(vendor, location string, items ...*OrderLineItem) (*Order, error) {
 	order := &Order{
-		State:     OrderStateInit,
+		State:     OrderStatePending,
 		Vendor:    vendor,
 		Location:  location,
 		LineItems: items,
