@@ -21,4 +21,6 @@ type OrderRepo interface {
 	// FindOrders finds and returns orders
 	// 	TODO: pagination by param
 	FindOrders() ([]*domain.Order, error)
+
+	UpdateOrder(order *domain.Order) error
 }

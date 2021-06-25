@@ -8,7 +8,7 @@ import (
 
 type Order struct {
 	ID        int64            `json:"id,omitempty"`
-	State     string           `json:"state,omitempty"`
+	Status    string           `json:"status,omitempty"`
 	Vendor    string           `json:"vendor"`
 	Location  string           `json:"location"`
 	LineItems []*OrderLineItem `json:"line_items"`
@@ -16,7 +16,8 @@ type Order struct {
 }
 
 const (
-	OrderStatePending = "PENDING"
+	OrderStatusPending  = "PENDING"
+	OrderStatusApproved = "APPROVED"
 )
 
 type OrderLineItem struct {
@@ -53,7 +54,7 @@ func (o *Order) validate() error {
 
 func NewOrder(vendor, location string, items ...*OrderLineItem) (*Order, error) {
 	order := &Order{
-		State:     OrderStatePending,
+		Status:    OrderStatusPending,
 		Vendor:    vendor,
 		Location:  location,
 		LineItems: items,
