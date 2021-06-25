@@ -5,12 +5,13 @@ import (
 	"services.payment/internal/appservice/port"
 	"services.payment_contract/payment_command"
 	"services.shared/apperror"
+	"services.shared/saga"
 	"services.shared/saga/msg"
 )
 
-func AuthorizePaymentCommandHandler(repo port.Repo) func(msg.Command) error {
+func AuthorizePaymentCommandHandler(repo port.Repo, sagaManager saga.Manager) func(msg.Command) error {
 	return func(command msg.Command) error {
-		service := NewAuthorizePaymentService(repo)
+		service := NewAuthorizePaymentService(repo, sagaManager)
 		input, err := extractAuthorizePaymentInputFromCommand(command)
 		if err != nil {
 			return apperror.WithLog(err, "extract AuthorizePaymentInput from command")
@@ -32,7 +33,8 @@ func extractAuthorizePaymentInputFromCommand(command msg.Command) (AuthorizePaym
 		return AuthorizePaymentInput{}, apperror.WithLog(err, "unmarshal AuthorizePayment payload")
 	}
 	return AuthorizePaymentInput{
-		OrderID: payload.OrderID,
-		Total:   payload.Total,
+		OrderID:   payload.OrderID,
+		Total:     payload.Total,
+		CommandID: command.ID(),
 	}, nil
 }

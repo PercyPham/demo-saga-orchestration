@@ -8,5 +8,5 @@ import (
 )
 
 func HandleCommands(sm saga.Manager, repo port.Repo) {
-	sm.Handle(payment_command.AuthorizePayment, authorize_payment.AuthorizePaymentCommandHandler(repo))
+	sm.Handle(payment_command.AuthorizePayment, authorize_payment.AuthorizePaymentCommandHandler(repo, sm))
 }
