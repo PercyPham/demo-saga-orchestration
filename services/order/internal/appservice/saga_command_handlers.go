@@ -8,5 +8,5 @@ import (
 )
 
 func HandleCommands(sm saga.Manager, repo port.Repo) {
-	sm.Handle(order_command.ApproveOrder, approve_order.ApproveOrderCommandHandler(repo))
+	sm.Handle(order_command.ApproveOrder, approve_order.ApproveOrderCommandHandler(repo, sm))
 }

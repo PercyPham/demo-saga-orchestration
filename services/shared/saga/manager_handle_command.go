@@ -8,7 +8,7 @@ import (
 func (m *manager) serveHandlingCommands() {
 	commandChan, _, err := m.consumer.Consume(m.commandChannel)
 	if err != nil {
-		panic("cannot handle saga commands: "+err.Error())
+		panic("cannot handle saga commands: " + err.Error())
 	}
 	m.logf("Start handling commands from MessageQueue channel: %s", m.commandChannel)
 	for d := range commandChan {
@@ -27,7 +27,7 @@ func (m *manager) handleCommandDelivery(d msg.Delivery) {
 	tx := m.sagaRepo.BeginTransaction()
 	err = m.handleCommand(tx, command)
 	if err != nil {
-		m.logf("Error: failed to handle command message: %s, reason: %v", d.Message.ID(), err)
+		m.logf("Error: failed to handle command %s:%s, reason: %v", command.Type(), command.ID(), err)
 		d.Nack()
 		tx.RollbackTransaction()
 		return

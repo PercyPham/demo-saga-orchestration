@@ -42,7 +42,7 @@ func (m *stateMachine) SagaType() string {
 
 func (m *stateMachine) ExecuteFirstStep(currentSaga Saga) (newSaga Saga, nextCommand msg.Command, err error) {
 	if currentSaga.EndState {
-		return Saga{}, nil, errors.New("saga " + currentSaga.ID + " has reached end state")
+		return currentSaga, nil, nil
 	}
 	if currentSaga.CurrentStep != 0 {
 		return Saga{}, nil, errors.New("saga " + currentSaga.ID + " executed first step before")

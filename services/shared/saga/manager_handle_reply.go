@@ -29,7 +29,7 @@ func (m *manager) handleReplyDelivery(d msg.Delivery) {
 	tx := m.sagaRepo.BeginTransaction()
 	err = m.handleReply(tx, reply)
 	if err != nil {
-		m.logf("Error: cannot handle reply message: %s, reason: %v", genJsonMessage(d.Message), err)
+		m.logf("Error: cannot handle reply message: %s, reason: %v\nreply message: %s", reply.Type(), err, genJsonMessage(d.Message))
 		d.Nack()
 		tx.RollbackTransaction()
 		return
