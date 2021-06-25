@@ -41,11 +41,11 @@ func convertTicketToGorm(t *domain.Ticket) (*Ticket, error) {
 }
 
 func (r *repoImpl) CreateTicket(ticket *domain.Ticket) error {
-	tGorm, err := convertTicketToGorm(ticket)
+	gormTicket, err := convertTicketToGorm(ticket)
 	if err != nil {
 		return apperror.WithLog(err, "convert ticket to gorm ticket")
 	}
-	result := r.db.Create(tGorm)
+	result := r.db.Create(gormTicket)
 	if result.Error != nil {
 		return apperror.WithLog(result.Error, "create ticket in db using gorm")
 	}
@@ -53,12 +53,12 @@ func (r *repoImpl) CreateTicket(ticket *domain.Ticket) error {
 }
 
 func (r *repoImpl) FindTicketByOrderID(orderID int64) *domain.Ticket {
-	tGorm := new(Ticket)
-	result := r.db.Where("order_id = ?", orderID).First(tGorm)
+	gormTicket := new(Ticket)
+	result := r.db.Where("order_id = ?", orderID).First(gormTicket)
 	if result.Error != nil {
 		return nil
 	}
-	return tGorm.toDomainTicket()
+	return gormTicket.toDomainTicket()
 }
 
 func (r *repoImpl) FindTickets() ([]*domain.Ticket, error) {

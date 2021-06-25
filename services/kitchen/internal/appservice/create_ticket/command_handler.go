@@ -10,9 +10,6 @@ import (
 	"services.shared/saga/msg"
 )
 
-type CommandRepo interface {
-}
-
 func CreateTicketCommandHandler(repo port.Repo) func(command msg.Command) error {
 	return func(command msg.Command) error {
 		createTickerService := NewCreateTicketService(repo)
