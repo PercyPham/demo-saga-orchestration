@@ -43,6 +43,7 @@ func main() {
 		panic(err)
 	}
 
+	appservice.HandleCommands(sagaManager, repo)
 	appservice.RegisterStateMachines(sagaManager)
 
 	go sagaManager.Serve()
