@@ -2,7 +2,7 @@ package appservice
 
 import (
 	"services.kitchen/internal/appservice/create_ticket"
-	"services.kitchen/internal/port"
+	"services.kitchen/internal/appservice/port"
 	"services.kitchen_contract/kitchen_command"
 	"services.shared/saga"
 )

@@ -2,10 +2,10 @@ package create_ticket
 
 import (
 	"encoding/json"
+	"services.kitchen/internal/appservice/port"
 	"services.kitchen/internal/domain"
 	"services.kitchen_contract/kitchen_command"
 
-	"services.kitchen/internal/port"
 	"services.shared/apperror"
 	"services.shared/saga/msg"
 )
@@ -51,4 +51,3 @@ func extractCreateTicketInputFromCommand(command msg.Command) (CreateTicketInput
 		LineItems: lineItems,
 	}, nil
 }
-

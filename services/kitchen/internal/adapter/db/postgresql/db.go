@@ -2,12 +2,11 @@ package postgresql
 
 import (
 	"fmt"
-	"services.kitchen/internal/common/config"
-	"services.kitchen/internal/port"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"services.kitchen/internal/appservice/port"
+	"services.kitchen/internal/common/config"
 )
 
 func Connect(cfg config.PostgreSQLConfig) (port.Repo, error) {
