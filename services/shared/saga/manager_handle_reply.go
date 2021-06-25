@@ -35,7 +35,7 @@ func (m *manager) handleReplyDelivery(d msg.Delivery) {
 		return
 	}
 
-	m.logf("Handled saga reply %s of saga %s", reply.ID(), reply.SagaID())
+	m.logf("Handled saga reply %s:%s of saga %s", reply.Type(), reply.ID(), reply.SagaID())
 	d.Ack()
 	tx.CommitTransaction()
 }
