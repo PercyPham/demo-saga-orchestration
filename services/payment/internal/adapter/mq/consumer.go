@@ -18,7 +18,7 @@ type consumer struct {
 func (c *consumer) Consume(channel string) (mChan <-chan msg.Delivery, close func() error, err error) {
 	ch, err := c.conn.Channel()
 	if err != nil {
-		return nil, nil, apperror.WithLog(err, "open rabbitmq channel")
+		return nil, nil, apperror.Wrap(err, "open rabbitmq channel")
 	}
 
 	q, err := ch.QueueDeclare(
@@ -30,7 +30,7 @@ func (c *consumer) Consume(channel string) (mChan <-chan msg.Delivery, close fun
 		nil,     // arguments
 	)
 	if err != nil {
-		return nil, nil, apperror.WithLog(err, "declare queue with name "+channel)
+		return nil, nil, apperror.Wrap(err, "declare queue with name "+channel)
 	}
 
 	msgQueueChan, err := ch.Consume(
@@ -43,7 +43,7 @@ func (c *consumer) Consume(channel string) (mChan <-chan msg.Delivery, close fun
 		nil,    // args
 	)
 	if err != nil {
-		return nil, nil, apperror.WithLog(err, "consume message from channel "+channel)
+		return nil, nil, apperror.Wrap(err, "consume message from channel "+channel)
 	}
 
 	messageChan := make(chan msg.Delivery, 1)

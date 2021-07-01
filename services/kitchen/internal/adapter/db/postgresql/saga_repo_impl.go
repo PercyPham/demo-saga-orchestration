@@ -10,7 +10,7 @@ import (
 func (r *repoImpl) CreateSaga(sagaInstance *saga.Saga) error {
 	result := r.db.Create(sagaInstance)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "create Saga in db using gorm")
+		return apperror.Wrap(result.Error, "create Saga in db using gorm")
 	}
 	return nil
 }
@@ -27,7 +27,7 @@ func (r *repoImpl) FindSagaByID(id string) *saga.Saga {
 func (r *repoImpl) UpdateSaga(sagaInstance *saga.Saga) error {
 	result := r.db.Save(sagaInstance)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "save Saga in db using gorm")
+		return apperror.Wrap(result.Error, "save Saga in db using gorm")
 	}
 	return nil
 }
@@ -40,7 +40,7 @@ type ProcessedMessage struct {
 func (r *repoImpl) CreateProcessedMessage(message msg.Message) error {
 	m, err := msg.Marshal(message)
 	if err != nil {
-		return apperror.WithLog(err, "marshal message to json")
+		return apperror.Wrap(err, "marshal message to json")
 	}
 	processedMessage := &ProcessedMessage{
 		ID:      message.ID(),
@@ -48,7 +48,7 @@ func (r *repoImpl) CreateProcessedMessage(message msg.Message) error {
 	}
 	result := r.db.Create(processedMessage)
 	if result.Error != nil {
-		return apperror.WithLog(err, "create processed message using gorm")
+		return apperror.Wrap(err, "create processed message using gorm")
 	}
 	return nil
 }

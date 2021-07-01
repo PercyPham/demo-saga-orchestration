@@ -21,12 +21,12 @@ type publisher struct {
 func (p *publisher) Publish(topic string, event msg.Event) error {
 	jsonEvent, err := msg.Marshal(event)
 	if err != nil {
-		return apperror.WithLog(err, "marshal event into json")
+		return apperror.Wrap(err, "marshal event into json")
 	}
 
 	ch, err := p.conn.Channel()
 	if err != nil {
-		return apperror.WithLog(err, "create channel to RabbitMQ")
+		return apperror.Wrap(err, "create channel to RabbitMQ")
 	}
 	defer ch.Close()
 

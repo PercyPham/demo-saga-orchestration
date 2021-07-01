@@ -21,7 +21,8 @@ type AcceptTicketService struct {
 func (s *AcceptTicketService) AcceptTicketWithOrderID(orderID int64) error {
 	ticket := s.repo.FindTicketByOrderID(orderID)
 	if ticket == nil {
-		return apperror.New(apperror.NotFound, "cannot find ticket with order id "+strconv.FormatInt(orderID, 10))
+		return apperror.New("cannot find ticket with order id " + strconv.FormatInt(orderID, 10)).
+			WithCode(apperror.NotFound)
 	}
 
 	if ticket.Status == domain.TicketStatusAccepted {
@@ -29,20 +30,21 @@ func (s *AcceptTicketService) AcceptTicketWithOrderID(orderID int64) error {
 	}
 
 	if ticket.Status != domain.TicketStatusPending {
-		return apperror.New(apperror.NotAcceptable, "cannot change ticket status to ACCEPTED, current status is "+ticket.Status)
+		return apperror.New("cannot change ticket status to ACCEPTED, current status is " + ticket.Status).
+			WithCode(apperror.NotAcceptable)
 	}
 
 	ticket.Status = domain.TicketStatusAccepted
 
 	err := s.repo.UpdateTicket(ticket)
 	if err != nil {
-		return apperror.WithLog(err, "update ticket")
+		return apperror.Wrap(err, "update ticket")
 	}
 
 	ticketCreatedReply := kitchen_reply.NewTicketCreatedReply()
 	err = s.sagaManager.ReplySuccess(ticket.CommandID, ticketCreatedReply)
 	if err != nil {
-		return apperror.WithLog(err, "reply to command")
+		return apperror.Wrap(err, "reply to command")
 	}
 
 	return nil

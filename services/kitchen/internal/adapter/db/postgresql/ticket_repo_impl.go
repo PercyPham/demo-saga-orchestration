@@ -29,7 +29,7 @@ func (t *Ticket) toDomainTicket() *domain.Ticket {
 func convertTicketToGorm(t *domain.Ticket) (*Ticket, error) {
 	lineItems, err := json.Marshal(t.LineItems)
 	if err != nil {
-		return nil, apperror.WithLog(err, "marshal order line items")
+		return nil, apperror.Wrap(err, "marshal order line items")
 	}
 	return &Ticket{
 		OrderID:   t.OrderID,
@@ -43,11 +43,11 @@ func convertTicketToGorm(t *domain.Ticket) (*Ticket, error) {
 func (r *repoImpl) CreateTicket(ticket *domain.Ticket) error {
 	gormTicket, err := convertTicketToGorm(ticket)
 	if err != nil {
-		return apperror.WithLog(err, "convert ticket to gorm ticket")
+		return apperror.Wrap(err, "convert ticket to gorm ticket")
 	}
 	result := r.db.Create(gormTicket)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "create ticket in db using gorm")
+		return apperror.Wrap(result.Error, "create ticket in db using gorm")
 	}
 	return nil
 }
@@ -65,7 +65,7 @@ func (r *repoImpl) FindTickets() ([]*domain.Ticket, error) {
 	gormTickets := make([]*Ticket, 0)
 	result := r.db.Find(&gormTickets)
 	if result.Error != nil {
-		return nil, apperror.WithLog(result.Error, "find tickets using gorm")
+		return nil, apperror.Wrap(result.Error, "find tickets using gorm")
 	}
 	ticket := make([]*domain.Ticket, result.RowsAffected)
 	for i, gormTicket := range gormTickets {
@@ -77,11 +77,11 @@ func (r *repoImpl) FindTickets() ([]*domain.Ticket, error) {
 func (r *repoImpl) UpdateTicket(ticket *domain.Ticket) error {
 	gormTicket, err := convertTicketToGorm(ticket)
 	if err != nil {
-		return apperror.WithLog(err, "convert domain ticket to gorm ticket")
+		return apperror.Wrap(err, "convert domain ticket to gorm ticket")
 	}
 	result := r.db.Updates(gormTicket)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "update ticket using gorm")
+		return apperror.Wrap(result.Error, "update ticket using gorm")
 	}
 	return nil
 }

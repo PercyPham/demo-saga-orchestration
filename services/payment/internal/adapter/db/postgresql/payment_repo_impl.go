@@ -34,7 +34,7 @@ func (r *repoImpl) CreatePayment(ticket *domain.Payment) error {
 	gormPayment := convertPaymentToGorm(ticket)
 	result := r.db.Create(gormPayment)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "create payment in db using gorm")
+		return apperror.Wrap(result.Error, "create payment in db using gorm")
 	}
 	return nil
 }
@@ -52,7 +52,7 @@ func (r *repoImpl) UpdatePayment(payment *domain.Payment) error {
 	gormPayment := convertPaymentToGorm(payment)
 	result := r.db.Updates(gormPayment)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "update payment using gorm")
+		return apperror.Wrap(result.Error, "update payment using gorm")
 	}
 	return nil
 }

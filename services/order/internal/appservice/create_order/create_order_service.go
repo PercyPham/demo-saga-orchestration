@@ -25,22 +25,22 @@ type CreateOrderInput struct {
 func (s *CreateOrderService) CreateOrder(input CreateOrderInput) (*domain.Order, error) {
 	order, err := domain.NewOrder(input.Vendor, input.Location, input.LineItems...)
 	if err != nil {
-		return nil, apperror.WithLog(err, "create order from input")
+		return nil, apperror.Wrap(err, "create order from input")
 	}
 
 	err = s.repo.CreateOrder(order)
 	if err != nil {
-		return nil, apperror.WithLog(err, "create order in database")
+		return nil, apperror.Wrap(err, "create order in database")
 	}
 
 	createOrderSaga, err := newCreateOrderSaga(order)
 	if err != nil {
-		return nil, apperror.WithLog(err, "create CreateOrderSaga instance")
+		return nil, apperror.Wrap(err, "create CreateOrderSaga instance")
 	}
 
 	err = s.sagaManager.ExecuteFirstStep(*createOrderSaga)
 	if err != nil {
-		return nil, apperror.WithLog(err, "execute first step in CreateOrderSaga")
+		return nil, apperror.Wrap(err, "execute first step in CreateOrderSaga")
 	}
 
 	return order, nil

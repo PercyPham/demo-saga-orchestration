@@ -19,7 +19,7 @@ type FindOrderService struct {
 func (s *FindOrderService) FindByID(id int64) (*domain.Order, error) {
 	order := s.orderRepo.FindOrderByID(id)
 	if order == nil {
-		return nil, apperror.New(apperror.NotFound, "order with id "+strconv.FormatInt(id, 10)+" not found")
+		return nil, apperror.New("order with id " + strconv.FormatInt(id, 10) + " not found").WithCode(apperror.NotFound)
 	}
 
 	return order, nil

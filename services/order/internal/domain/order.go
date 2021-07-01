@@ -28,24 +28,24 @@ type OrderLineItem struct {
 
 func (o *Order) validate() error {
 	if o.Vendor == "" {
-		return apperror.New(apperror.BadRequest, "vendor must not be empty")
+		return apperror.New("vendor must not be empty")
 	}
 	if o.Location == "" {
-		return apperror.New(apperror.BadRequest, "location must not be empty")
+		return apperror.New("location must not be empty")
 	}
 	if len(o.LineItems) == 0 {
-		return apperror.New(apperror.BadRequest, "items must not be empty")
+		return apperror.New("items must not be empty")
 	}
 	m := map[string]bool{}
 	for idx, item := range o.LineItems {
 		if item.ID == "" {
-			return apperror.New(apperror.BadRequest, "empty item id at index "+strconv.Itoa(idx))
+			return apperror.New("empty item id at index " + strconv.Itoa(idx))
 		}
 		if item.Quantity < 1 {
-			return apperror.New(apperror.BadRequest, "item quantity must be greater than zero")
+			return apperror.New("item quantity must be greater than zero")
 		}
 		if m[item.ID] {
-			return apperror.New(apperror.BadRequest, "duplicate items "+item.ID)
+			return apperror.New("duplicate items " + item.ID)
 		}
 		m[item.ID] = true
 	}
@@ -60,7 +60,7 @@ func NewOrder(vendor, location string, items ...*OrderLineItem) (*Order, error) 
 		LineItems: items,
 	}
 	if err := order.validate(); err != nil {
-		return nil, apperror.WithLog(err, "validate order")
+		return nil, apperror.Wrap(err, "validate order").WithCode(apperror.BadRequest)
 	}
 	return order, nil
 }

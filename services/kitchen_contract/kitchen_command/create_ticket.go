@@ -24,7 +24,7 @@ type OrderLineItem struct {
 func (p *CreateTicketPayload) ToJSON() (string, error) {
 	j, err := json.Marshal(p)
 	if err != nil {
-		return "", apperror.WithLog(err, "marshal payload")
+		return "", apperror.Wrap(err, "marshal payload")
 	}
 	return string(j), nil
 }
@@ -36,7 +36,7 @@ func NewCreateTicketCommand(payload CreateTicketPayload) (msg.Command, error) {
 	}
 	jsonPayload, err := payload.ToJSON()
 	if err != nil {
-		return nil, apperror.WithLog(err, "convert payload to json")
+		return nil, apperror.Wrap(err, "convert payload to json")
 	}
 	return msg.NewCommand(meta, jsonPayload), nil
 }

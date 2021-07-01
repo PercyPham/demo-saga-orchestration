@@ -14,12 +14,12 @@ func AuthorizePaymentCommandHandler(repo port.Repo, sagaManager saga.Manager) fu
 		service := NewAuthorizePaymentService(repo, sagaManager)
 		input, err := extractAuthorizePaymentInputFromCommand(command)
 		if err != nil {
-			return apperror.WithLog(err, "extract AuthorizePaymentInput from command")
+			return apperror.Wrap(err, "extract AuthorizePaymentInput from command")
 		}
 
 		err = service.AuthorizePayment(input)
 		if err != nil {
-			return apperror.WithLog(err, "authorize payment")
+			return apperror.Wrap(err, "authorize payment")
 		}
 
 		return nil
@@ -30,7 +30,7 @@ func extractAuthorizePaymentInputFromCommand(command msg.Command) (AuthorizePaym
 	payload := new(payment_command.AuthorizePaymentPayload)
 	err := json.Unmarshal([]byte(command.Payload()), payload)
 	if err != nil {
-		return AuthorizePaymentInput{}, apperror.WithLog(err, "unmarshal AuthorizePayment payload")
+		return AuthorizePaymentInput{}, apperror.Wrap(err, "unmarshal AuthorizePayment payload")
 	}
 	return AuthorizePaymentInput{
 		OrderID:   payload.OrderID,

@@ -21,15 +21,15 @@ type ApproveTicketService struct {
 func (s *ApproveTicketService) ApproveTicket(orderID int64) error {
 	ticket := s.repo.FindTicketByOrderID(orderID)
 	if ticket == nil {
-		return apperror.New(apperror.NotAcceptable, "cannot find ticket with order id "+strconv.FormatInt(orderID, 10))
+		return apperror.New("cannot find ticket with order id " + strconv.FormatInt(orderID, 10))
 	}
 	ticket.Status = domain.TicketStatusApproved
 	if err := s.repo.UpdateTicket(ticket); err != nil {
-		return apperror.WithLog(err, "update ticket")
+		return apperror.Wrap(err, "update ticket")
 	}
 	err := s.sagaManager.ReplySuccess(ticket.CommandID, kitchen_reply.NewTicketApprovedReply())
 	if err != nil {
-		return apperror.WithLog(err, "reply TicketApproved")
+		return apperror.Wrap(err, "reply TicketApproved")
 	}
 	return nil
 }

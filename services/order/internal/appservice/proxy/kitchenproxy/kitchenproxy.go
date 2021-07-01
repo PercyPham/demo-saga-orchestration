@@ -25,7 +25,7 @@ func GenCreateTicketCommand(order *domain.Order) (msg.Command, error) {
 
 	command, err := kitchen_command.NewCreateTicketCommand(payload)
 	if err != nil {
-		return nil, apperror.WithLog(err, "create CreateTicketCommand")
+		return nil, apperror.Wrap(err, "create CreateTicketCommand")
 	}
 
 	return command, nil

@@ -11,7 +11,7 @@ func (s *OrderRestApiServer) findOrderByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		s.response.Error(c, apperror.New(apperror.BadRequest, "order id must be an integer"))
+		s.response.Error(c, apperror.New("order id must be an integer").WithCode(apperror.BadRequest))
 		return
 	}
 

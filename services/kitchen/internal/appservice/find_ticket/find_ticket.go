@@ -4,7 +4,6 @@ import (
 	"services.kitchen/internal/appservice/port"
 	"services.kitchen/internal/domain"
 	"services.shared/apperror"
-	"strconv"
 )
 
 func NewFindTicketService(r port.TicketRepo) *FindTicketService {
@@ -18,7 +17,7 @@ type FindTicketService struct {
 func (s *FindTicketService) FindByOrderID(orderID int64) (*domain.Ticket, error) {
 	ticket := s.ticketRepo.FindTicketByOrderID(orderID)
 	if ticket == nil {
-		return nil, apperror.New(apperror.NotFound, "ticket with order id "+strconv.FormatInt(orderID, 10)+" not found")
+		return nil, apperror.Newf("ticket with order id %d not found", orderID).WithCode(apperror.NotFound)
 	}
 	return ticket, nil
 }

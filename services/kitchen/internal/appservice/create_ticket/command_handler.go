@@ -15,12 +15,12 @@ func CreateTicketCommandHandler(repo port.Repo) func(command msg.Command) error 
 		createTickerService := NewCreateTicketService(repo)
 		input, err := extractCreateTicketInputFromCommand(command)
 		if err != nil {
-			return apperror.WithLog(err, "extract CreateTicketInput from command")
+			return apperror.Wrap(err, "extract CreateTicketInput from command")
 		}
 
 		err = createTickerService.CreateTicket(input)
 		if err != nil {
-			return apperror.WithLog(err, "create ticket")
+			return apperror.Wrap(err, "create ticket")
 		}
 
 		return nil
@@ -31,7 +31,7 @@ func extractCreateTicketInputFromCommand(command msg.Command) (CreateTicketInput
 	payload := new(kitchen_command.CreateTicketPayload)
 	err := json.Unmarshal([]byte(command.Payload()), payload)
 	if err != nil {
-		return CreateTicketInput{}, apperror.WithLog(err, "unmarshal CreateTicket command payload")
+		return CreateTicketInput{}, apperror.Wrap(err, "unmarshal CreateTicket command payload")
 	}
 	lineItems := make([]domain.LineItem, len(payload.LineItems))
 	for i, item := range payload.LineItems {

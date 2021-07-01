@@ -13,12 +13,12 @@ func ApproveOrderCommandHandler(repo port.Repo, sm saga.Manager) func(command ms
 		approveOrderService := NewApproveOrderService(repo, sm)
 		orderID, err := strconv.ParseInt(command.Payload(), 10, 64)
 		if err != nil {
-			return apperror.WithLog(err, "get orderID from payload")
+			return apperror.Wrap(err, "get orderID from payload")
 		}
 
 		err = approveOrderService.ApproveOrder(orderID, command.ID())
 		if err != nil {
-			return apperror.WithLog(err, "approve order")
+			return apperror.Wrap(err, "approve order")
 		}
 
 		return nil

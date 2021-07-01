@@ -22,11 +22,11 @@ type ApproveOrderService struct {
 func (s *ApproveOrderService) ApproveOrder(orderID int64, commandID string) error {
 	order := s.repo.FindOrderByID(orderID)
 	if order == nil {
-		return apperror.New(apperror.NotAcceptable, "cannot find order with id "+strconv.FormatInt(orderID, 10))
+		return apperror.New("cannot find order with id "+strconv.FormatInt(orderID, 10))
 	}
 	order.Status = domain.OrderStatusApproved
 	if err := s.repo.UpdateOrder(order); err != nil {
-		return apperror.WithLog(err, "update order")
+		return apperror.Wrap(err, "update order")
 	}
 
 	go s.replyOrderApproved(commandID)
@@ -39,6 +39,6 @@ func (s *ApproveOrderService) replyOrderApproved(commandID string) {
 	time.Sleep(1000)
 	err := s.sagaManager.ReplySuccess(commandID, order_reply.NewOrderApprovedReply())
 	if err != nil {
-		panic(apperror.WithLog(err, "reply OrderApproved"))
+		panic(apperror.Wrap(err, "reply OrderApproved"))
 	}
 }

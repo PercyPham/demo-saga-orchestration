@@ -2,112 +2,80 @@ package apperror_test
 
 import (
 	"errors"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
 	"services.shared/apperror"
+	"testing"
 )
 
-func TestNewAppError(t *testing.T) {
-	appErr := apperror.New(apperror.NotFound, "message")
+func TestNewAppErr(t *testing.T) {
+	appErr := apperror.New("new error")
+	if appErr.Error() != "new error" {
+		t.Errorf("expected 'new error', got '%s'", appErr.Error())
+	}
+}
 
-	assert.Equal(t, apperror.NotFound, appErr.Code())
-	assert.Equal(t, "message", appErr.Message())
+func TestNewAppErrf(t *testing.T) {
+	appErr := apperror.Newf("new %s", "error")
+	if appErr.Error() != "new error" {
+		t.Errorf("expected 'new error', got '%s'", appErr.Error())
+	}
+}
+
+func TestWrapNil(t *testing.T) {
+	appErr := apperror.Wrap(nil, "error message")
+	if appErr != nil {
+		t.Errorf("expected nil, got '%v'", appErr)
+	}
 }
 
 func TestWrapError(t *testing.T) {
-	err := errors.New("origin error message")
-	wrappedErr := apperror.Wrap(err, apperror.BadRequest, "wrapped error message", "wrapped log")
-
-	assert.Equal(t, apperror.BadRequest, wrappedErr.Code())
-	assert.Equal(t, "wrapped error message", wrappedErr.Message())
+	err := errors.New("error")
+	appErr := apperror.Wrap(err, "wrap")
+	if appErr.Error() != "wrap: error" {
+		t.Errorf("expected 'wrap: error', got '%s'", appErr.Error())
+	}
 }
 
-func TestWrapAppError(t *testing.T) {
-	appErr := apperror.New(apperror.NotFound, "not found message")
-	wrappedAppErr := apperror.Wrap(appErr, apperror.BadRequest, "bad request message", "bad request log")
-
-	assert.Equal(t, apperror.BadRequest, wrappedAppErr.Code())
-	assert.Equal(t, "bad request message", wrappedAppErr.Message())
+func TestWrapWithFormatMessage(t *testing.T) {
+	err := errors.New("error")
+	appErr := apperror.Wrapf(err, "formatted %s %v", "message", 0)
+	expected := "formatted message 0: error"
+	if appErr.Error() != expected {
+		t.Errorf("expected '%s', got '%s'", expected, appErr.Error())
+	}
 }
 
-func TestRootErrorOfNil(t *testing.T) {
-	rootErr := apperror.RootError(nil)
-	assert.Equal(t, nil, rootErr)
+func TestWithoutCode(t *testing.T) {
+	appErr := apperror.New("error")
+	if appErr.Code() != apperror.InternalServerError {
+		t.Errorf("expected %v, got %v", apperror.InternalServerError, appErr.Code())
+	}
 }
 
-func TestRootErrorOfErr(t *testing.T) {
-	err := errors.New("message")
-	rootErr := apperror.RootError(err)
-
-	assert.Equal(t, err, rootErr)
-
-	wrappedErr1 := apperror.Wrap(err, apperror.BadRequest, "wrapped message 1", "wrapped log 1")
-	wrappedErr2 := apperror.Wrap(wrappedErr1, apperror.BadRequest, "wrapped message 2", "wrapped log 2")
-	rootErr = apperror.RootError(wrappedErr2)
-
-	assert.Equal(t, err, rootErr)
+func TestWithCode(t *testing.T) {
+	appErr := apperror.New("error").WithCode(1000)
+	if appErr.Code() != 1000 {
+		t.Errorf("expected %v, got %v", 1000, appErr.Code())
+	}
 }
 
-func TestRootErrorOfAppErr(t *testing.T) {
-	appErr := apperror.New(apperror.BadRequest, "app err message")
-	rootErr := apperror.RootError(appErr)
-
-	assert.Equal(t, appErr, rootErr)
-
-	wrappedErr1 := apperror.Wrap(appErr, apperror.BadRequest, "wrapped message 1", "wrapped log 1")
-	wrappedErr2 := apperror.Wrap(wrappedErr1, apperror.BadRequest, "wrapped message 2", "wrapped log 2")
-	rootErr = apperror.RootError(wrappedErr2)
-
-	assert.Equal(t, appErr, rootErr)
+func TestWithoutPublicMessage(t *testing.T) {
+	appErr := apperror.New("error")
+	if appErr.PublicMessage() != "internal server error" {
+		t.Errorf("expected 'internal server error', got %s", appErr.PublicMessage())
+	}
 }
 
-func TestAppErrorErrorMessage(t *testing.T) {
-	appErr := apperror.New(apperror.NotFound, "message")
-
-	assert.Equal(t, "message", appErr.Error())
+func TestWithPublicMessage(t *testing.T) {
+	appErr := apperror.New("error").WithPublicMessage("public message")
+	if appErr.PublicMessage() != "public message" {
+		t.Errorf("expected 'public message', got %s", appErr.PublicMessage())
+	}
 }
 
-func TestWrappedAppErrorErrorMessage(t *testing.T) {
-	appErr := apperror.New(apperror.NotFound, "message")
-	wrappedAppErr1 := apperror.Wrap(appErr, apperror.BadRequest, "wrapped message 1", "wrapped log 1")
-	wrappedAppErr2 := apperror.Wrap(wrappedAppErr1, apperror.BadRequest, "wrapped message 2", "wrapped log 2")
-
-	assert.Equal(t, "message", wrappedAppErr2.Error())
-	assert.Equal(t, "wrapped message 2\nCaused by: wrapped log 2\nCaused by: wrapped log 1\nCaused by: message", wrappedAppErr2.Trace())
-}
-
-func TestWrappedErrorErrorMessage(t *testing.T) {
-	err := errors.New("message")
-	wrappedAppErr1 := apperror.Wrap(err, apperror.BadRequest, "wrapped message 1", "wrapped log 1")
-	wrappedAppErr2 := apperror.Wrap(wrappedAppErr1, apperror.BadRequest, "wrapped message 2", "wrapped log 2")
-
-	assert.Equal(t, "message", wrappedAppErr2.Error())
-	assert.Equal(t, "wrapped message 2\nCaused by: wrapped log 2\nCaused by: wrapped log 1\nCaused by: message", wrappedAppErr2.Trace())
-}
-
-func TestErrWithLog(t *testing.T) {
-	err := errors.New("message")
-	appErr := apperror.WithLog(err, "log")
-
-	assert.Equal(t, apperror.InternalServerError, appErr.Code())
-	assert.Equal(t, "internal server error", appErr.Message())
-
-	assert.Equal(t, err, apperror.RootError(appErr))
-
-	assert.Equal(t, "message", appErr.Error())
-	assert.Equal(t, "internal server error\nCaused by: log\nCaused by: message", appErr.Trace())
-}
-
-func TestAppErrWithLog(t *testing.T) {
-	appErr := apperror.New(apperror.NotFound, "message")
-	withLogAppErr := apperror.WithLog(appErr, "log")
-
-	assert.Equal(t, apperror.NotFound, withLogAppErr.Code())
-	assert.Equal(t, "message", withLogAppErr.Message())
-
-	assert.Equal(t, appErr, apperror.RootError(withLogAppErr))
-
-	assert.Equal(t, "message", withLogAppErr.Error())
-	assert.Equal(t, "message\nCaused by: log\nCaused by: message", withLogAppErr.Trace())
+func TestWithPublicMessagef(t *testing.T) {
+	appErr := apperror.New("error").WithPublicMessagef("public %s", "message")
+	expected := "public message"
+	if appErr.PublicMessage() != expected {
+		t.Errorf("expected '%s', got %s", expected, appErr.PublicMessage())
+	}
 }

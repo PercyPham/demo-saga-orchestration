@@ -18,12 +18,12 @@ type producer struct {
 func (p *producer) Send(channel string, message msg.Message) error {
 	jsonMsg, err := msg.Marshal(message)
 	if err != nil {
-		return apperror.WithLog(err, "marshal message into json")
+		return apperror.Wrap(err, "marshal message into json")
 	}
 
 	ch, err := p.conn.Channel()
 	if err != nil {
-		return apperror.WithLog(err, "open rabbitmq channel")
+		return apperror.Wrap(err, "open rabbitmq channel")
 	}
 
 	q, err := ch.QueueDeclare(
@@ -35,7 +35,7 @@ func (p *producer) Send(channel string, message msg.Message) error {
 		nil,     // arguments
 	)
 	if err != nil {
-		return apperror.WithLog(err, "declare queue with name "+channel)
+		return apperror.Wrap(err, "declare queue with name "+channel)
 	}
 
 	err = ch.Publish(
@@ -50,7 +50,7 @@ func (p *producer) Send(channel string, message msg.Message) error {
 		},
 	)
 	if err != nil {
-		return apperror.WithLog(err, "publish message to queue "+channel)
+		return apperror.Wrap(err, "publish message to queue "+channel)
 	}
 
 	return nil

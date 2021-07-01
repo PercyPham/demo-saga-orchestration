@@ -19,7 +19,7 @@ const (
 func newCreateOrderSaga(order *domain.Order) (*saga.Saga, error) {
 	jsonOrder, err := json.Marshal(order)
 	if err != nil {
-		return nil, apperror.WithLog(err, "marshal order to json")
+		return nil, apperror.Wrap(err, "marshal order to json")
 	}
 	return saga.NewSaga(SagaTypeCreateOrder, jsonOrder), nil
 }
@@ -46,7 +46,7 @@ type createOrderStateMachine struct{}
 func (m *createOrderStateMachine) rejectOrder(sagaData []byte) (msg.Command, error) {
 	order, err := m.deserialize(sagaData)
 	if err != nil {
-		return nil, apperror.WithLog(err, "deserialize saga data")
+		return nil, apperror.Wrap(err, "deserialize saga data")
 	}
 	rejectOrderCommand := orderproxy.GenRejectOrderCommand(order.ID)
 	return rejectOrderCommand, nil
@@ -55,11 +55,11 @@ func (m *createOrderStateMachine) rejectOrder(sagaData []byte) (msg.Command, err
 func (m *createOrderStateMachine) createTicket(sagaData []byte) (msg.Command, error) {
 	order, err := m.deserialize(sagaData)
 	if err != nil {
-		return nil, apperror.WithLog(err, "deserialize saga data")
+		return nil, apperror.Wrap(err, "deserialize saga data")
 	}
 	createTicketCommand, err := kitchenproxy.GenCreateTicketCommand(order)
 	if err != nil {
-		return nil, apperror.WithLog(err, "generate Kitchen's CreateTicket command")
+		return nil, apperror.Wrap(err, "generate Kitchen's CreateTicket command")
 	}
 	return createTicketCommand, nil
 }
@@ -67,7 +67,7 @@ func (m *createOrderStateMachine) createTicket(sagaData []byte) (msg.Command, er
 func (m *createOrderStateMachine) rejectTicket(sagaData []byte) (msg.Command, error) {
 	order, err := m.deserialize(sagaData)
 	if err != nil {
-		return nil, apperror.WithLog(err, "deserialize saga data")
+		return nil, apperror.Wrap(err, "deserialize saga data")
 	}
 	rejectTicketCommand := kitchenproxy.GenRejectTicketCommand(order.ID)
 	return rejectTicketCommand, nil
@@ -76,7 +76,7 @@ func (m *createOrderStateMachine) rejectTicket(sagaData []byte) (msg.Command, er
 func (m *createOrderStateMachine) authorizePayment(sagaData []byte) (msg.Command, error) {
 	order, err := m.deserialize(sagaData)
 	if err != nil {
-		return nil, apperror.WithLog(err, "deserialize saga data")
+		return nil, apperror.Wrap(err, "deserialize saga data")
 	}
 	authorizePaymentCommand := paymentproxy.GenAuthorizePaymentCommand(order)
 	return authorizePaymentCommand, nil
@@ -85,7 +85,7 @@ func (m *createOrderStateMachine) authorizePayment(sagaData []byte) (msg.Command
 func (m *createOrderStateMachine) approveTicket(sagaData []byte) (msg.Command, error) {
 	order, err := m.deserialize(sagaData)
 	if err != nil {
-		return nil, apperror.WithLog(err, "deserialize saga data")
+		return nil, apperror.Wrap(err, "deserialize saga data")
 	}
 	approveTicketCommand := kitchenproxy.GenApproveTicketCommand(order.ID)
 	return approveTicketCommand, nil
@@ -94,7 +94,7 @@ func (m *createOrderStateMachine) approveTicket(sagaData []byte) (msg.Command, e
 func (m *createOrderStateMachine) approveOrder(sagaData []byte) (msg.Command, error) {
 	order, err := m.deserialize(sagaData)
 	if err != nil {
-		return nil, apperror.WithLog(err, "deserialize saga data")
+		return nil, apperror.Wrap(err, "deserialize saga data")
 	}
 	approveOrderCommand := orderproxy.GenApproveOrderCommand(order.ID)
 	return approveOrderCommand, nil
@@ -104,7 +104,7 @@ func (m *createOrderStateMachine) deserialize(sagaData []byte) (*domain.Order, e
 	order := new(domain.Order)
 	err := json.Unmarshal(sagaData, order)
 	if err != nil {
-		return nil, apperror.WithLog(err, "unmarshal sagaData to Order")
+		return nil, apperror.Wrap(err, "unmarshal sagaData to Order")
 	}
 	return order, nil
 }

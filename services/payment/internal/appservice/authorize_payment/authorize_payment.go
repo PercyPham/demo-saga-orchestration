@@ -39,7 +39,7 @@ func (s *AuthorizePaymentService) AuthorizePayment(input AuthorizePaymentInput) 
 
 	err := s.repo.CreatePayment(payment)
 	if err != nil {
-		return apperror.WithLog(err, "cannot create payment in db")
+		return apperror.Wrap(err, "cannot create payment in db")
 	}
 
 	go s.mockAuthorizePayment(payment)

@@ -1,118 +1,88 @@
 package apperror
 
-type AppError struct {
-	err     error
-	code    int
-	message string
-	log     string
+import "fmt"
+
+type AppError interface {
+	Error() string
+	Code() int
+	WithCode(code int) AppError
+	PublicMessage() string
+	WithPublicMessage(string) AppError
+	WithPublicMessagef(format string, args ...interface{}) AppError
 }
 
-// New returns a new AppError
-//
-// AppError's code
-// For error codes UNDER 1000, these error codes are borrow-from/based-on HTTP status code.
-//  See: https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-// For error codes from 1000 and above, these are app specific error codes.
-func New(code int, message string) *AppError {
-	return &AppError{
-		code:    code,
-		message: message,
-	}
+func New(message string) AppError {
+	return &appErr{msg: message, code: InternalServerError}
 }
 
-// Wrap wraps input error with addition infos and return AppError
-func Wrap(err error, code int, message, log string) *AppError {
-	return &AppError{
-		err:     err,
-		code:    code,
-		message: message,
-		log:     log,
-	}
+func Newf(format string, args ...interface{}) AppError {
+	message:= fmt.Sprintf(format, args...)
+	return &appErr{msg: message, code: InternalServerError}
 }
 
-// WithLog wraps error with addition log and return AppError
-//  if input error is AppError, it will retain code, message and add log to returned AppError
-//  if input error is plain error, it will wrap input with InternalServerError and add log to returned AppError
-func WithLog(err error, log string) *AppError {
-	if appErr, ok := err.(*AppError); ok {
-		return Wrap(err, appErr.code, appErr.message, log)
-	}
-
-	return Wrap(err, InternalServerError, "internal server error", log)
+func Wrap(err error, message string) AppError {
+	return wrap(err, message)
 }
 
-// RootError return most inner error of input error
-//  if input error is nil, it will return nil
-//  if input error is plain error, it will return input error
-func RootError(err error) error {
-	tempErr := err
-	for {
-		ae, ok := tempErr.(*AppError)
-		if !ok {
-			return tempErr
-		}
-		if ae.err == nil {
-			return ae
-		}
-		tempErr = ae.err
-	}
+func Wrapf(err error, format string, args ...interface{}) AppError {
+	message := fmt.Sprintf(format, args...)
+	return wrap(err, message)
 }
 
-// Error returns root error message
-func (e *AppError) Error() string {
-	rootErr := RootError(e)
-	if appErrRoot, ok := rootErr.(*AppError); ok {
-		return appErrRoot.message
+func wrap(err error, message string) AppError {
+	if err == nil {
+		return nil
 	}
-	return rootErr.Error()
+	code := InternalServerError
+	if aErr, ok := err.(AppError); ok {
+		code = aErr.Code()
+	}
+	return &appErr{cause: err, msg: message, code: code}
 }
 
-// Trace returns stack trace of error, including all logs and root error message
-func (e *AppError) Trace() string {
-	rootErr := RootError(e)
-	logs := e.logs()
-	if len(logs) == 0 {
-		if appErrRoot, ok := rootErr.(*AppError); ok {
-			return appErrRoot.message
-		}
-		return rootErr.Error()
-	}
-	s := e.Message()
-	for _, log := range logs {
-		s += "\nCaused by: " + log
-	}
-	s += "\nCaused by: " + rootErr.Error()
-	return s
+type appErr struct {
+	cause         error
+	msg           string
+	code          int
+	publicMsg string
 }
 
-// logs return all logs from outer most to inner most error, excluding empty logs
-func (e *AppError) logs() []string {
-	logs := make([]string, 0)
-
-	if e.log != "" {
-		logs = []string{e.log}
+func (e *appErr) Error() string {
+	if e.cause == nil {
+		return e.msg
 	}
-
-	err := e.err
-
-	for err != nil {
-		appErr, ok := err.(*AppError)
-		if !ok {
-			break
-		}
-		if appErr.log != "" {
-			logs = append(logs, appErr.log)
-		}
-		err = appErr.err
-	}
-
-	return logs
+	return e.msg + ": " + e.cause.Error()
 }
 
-func (e *AppError) Code() int {
-	return e.code
+// Unwrap provides compatibility for Go 1.13 error chains.
+func (e *appErr) Unwrap() error { return e.cause }
+
+func (e *appErr) Code() int { return e.code }
+
+func (e *appErr) WithCode(code int) AppError {
+	e.code = code
+	return e
 }
 
-func (e *AppError) Message() string {
-	return e.message
+func (e *appErr) PublicMessage() string {
+	if e.publicMsg != "" {
+		return e.publicMsg
+	}
+	if e.cause == nil {
+		return "internal server error"
+	}
+	if aErr, ok := e.cause.(AppError); ok {
+		return aErr.PublicMessage()
+	}
+	return "internal server error"
+}
+
+func (e *appErr) WithPublicMessage(m string) AppError {
+	e.publicMsg = m
+	return e
+}
+
+func (e *appErr) WithPublicMessagef(format string, args ...interface{}) AppError {
+	e.publicMsg = fmt.Sprintf(format, args...)
+	return e
 }

@@ -44,26 +44,19 @@ type successResponse struct {
 
 // Error responses error to client
 func (r *responder) Error(c JSONResponder, err error) {
-	var payload errorResponse
-
-	appErr, ok := err.(*apperror.AppError)
+	appErr, ok := err.(apperror.AppError)
 	if !ok {
-		appErr = apperror.WithLog(err, "")
+		appErr = apperror.Wrap(err, "response")
 	}
-
-	if r.logTrace || appErr.Code() == apperror.InternalServerError {
-		r.log.Error(appErr.Trace())
+	if appErr.Code() == apperror.InternalServerError {
+		r.log.Error(appErr.Error())
 	}
-	payload = newErrorResponse(
-		appErr.Code(),
-		apperror.StatusText(appErr.Code()),
-		appErr.Message(),
-	)
-	r.response(c, payload)
+	r.response(c, newErrorResponse(appErr.Code(), appErr.PublicMessage()))
+	return
 }
 
-func newErrorResponse(code int, status string, message string) errorResponse {
-	errContent := errorContent{code, status, message}
+func newErrorResponse(code int, message string) errorResponse {
+	errContent := errorContent{code, message}
 	return errorResponse{errContent}
 }
 
@@ -73,7 +66,6 @@ type errorResponse struct {
 
 type errorContent struct {
 	Code    int    `json:"code"`
-	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 

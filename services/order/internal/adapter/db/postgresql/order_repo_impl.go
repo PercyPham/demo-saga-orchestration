@@ -17,7 +17,7 @@ type Order struct {
 func convertOrderToGorm(o *domain.Order) (*Order, error) {
 	lineItems, err := json.Marshal(o.LineItems)
 	if err != nil {
-		return nil, apperror.WithLog(err, "marshal order line items")
+		return nil, apperror.Wrap(err, "marshal order line items")
 	}
 	return &Order{
 		Status:    o.Status,
@@ -42,11 +42,11 @@ func (o *Order) toDomainOrder() *domain.Order {
 func (r *repoImpl) CreateOrder(order *domain.Order) error {
 	gormOrder, err := convertOrderToGorm(order)
 	if err != nil {
-		return apperror.WithLog(err, "convert order to gorm order")
+		return apperror.Wrap(err, "convert order to gorm order")
 	}
 	result := r.db.Create(gormOrder)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "create order in db using gorm")
+		return apperror.Wrap(result.Error, "create order in db using gorm")
 	}
 	order.ID = gormOrder.ID
 	return nil
@@ -65,7 +65,7 @@ func (r *repoImpl) FindOrders() ([]*domain.Order, error) {
 	gormOrders := make([]*Order, 0)
 	result := r.db.Find(&gormOrders)
 	if result.Error != nil {
-		return nil, apperror.WithLog(result.Error, "find orders using gorm")
+		return nil, apperror.Wrap(result.Error, "find orders using gorm")
 	}
 	orders := make([]*domain.Order, result.RowsAffected)
 	for i, gormOrder := range gormOrders {
@@ -77,11 +77,11 @@ func (r *repoImpl) FindOrders() ([]*domain.Order, error) {
 func (r *repoImpl) UpdateOrder(order *domain.Order) error {
 	gormOrder, err := convertOrderToGorm(order)
 	if err != nil {
-		return apperror.WithLog(err, "convert domain order to gorm order")
+		return apperror.Wrap(err, "convert domain order to gorm order")
 	}
 	result := r.db.Where("id = ?", order.ID).Updates(gormOrder)
 	if result.Error != nil {
-		return apperror.WithLog(result.Error, "update order using gorm")
+		return apperror.Wrap(result.Error, "update order using gorm")
 	}
 	return nil
 }
