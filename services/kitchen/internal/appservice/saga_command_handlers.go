@@ -8,7 +8,7 @@ import (
 	"services.shared/saga"
 )
 
-func HandleCommands(sm saga.Manager, repo port.Repo) {
-	sm.Handle(kitchen_command.CreateTicket, create_ticket.CreateTicketCommandHandler(repo))
-	sm.Handle(kitchen_command.ApproveTicket, approve_ticket.ApproveTicketCommandHandler(repo, sm))
+func HandleCommands(ch saga.CommandHandler, repo port.Repo) {
+	ch.Handle(kitchen_command.CreateTicket, create_ticket.CreateTicketCommandHandler(repo))
+	ch.Handle(kitchen_command.ApproveTicket, approve_ticket.ApproveTicketCommandHandler(repo))
 }

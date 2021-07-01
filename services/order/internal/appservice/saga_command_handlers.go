@@ -7,6 +7,6 @@ import (
 	"services.shared/saga"
 )
 
-func HandleCommands(sm saga.Manager, repo port.Repo) {
-	sm.Handle(order_command.ApproveOrder, approve_order.ApproveOrderCommandHandler(repo, sm))
+func HandleCommands(ch saga.CommandHandler, repo port.Repo) {
+	ch.Handle(order_command.ApproveOrder, approve_order.ApproveOrderCommandHandler(repo, ch))
 }

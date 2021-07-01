@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-func NewAuthorizePaymentService(repo port.Repo, sagaManager saga.Manager) *AuthorizePaymentService {
-	return &AuthorizePaymentService{repo, sagaManager}
+func NewAuthorizePaymentService(repo port.Repo, sagaCmdHandler saga.CommandHandler) *AuthorizePaymentService {
+	return &AuthorizePaymentService{repo, sagaCmdHandler}
 }
 
 type AuthorizePaymentService struct {
-	repo        port.Repo
-	sagaManager saga.Manager
+	repo           port.Repo
+	sagaCmdHandler saga.CommandHandler
 }
 
 type AuthorizePaymentInput struct {
@@ -55,7 +55,7 @@ func (s *AuthorizePaymentService) mockAuthorizePayment(payment *domain.Payment) 
 		panic("cannot update payment to paid: " + err.Error())
 	}
 	paymentAuthorizedReply := payment_reply.NewPaymentAuthorizedReply()
-	err = s.sagaManager.ReplySuccess(payment.CommandID, paymentAuthorizedReply)
+	err = s.sagaCmdHandler.ReplySuccess(payment.CommandID, paymentAuthorizedReply)
 	if err != nil {
 		panic("cannot reply that payment authorized: " + err.Error())
 	}

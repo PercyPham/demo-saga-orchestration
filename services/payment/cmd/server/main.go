@@ -31,23 +31,22 @@ func main() {
 		panic("cannot connect MQ Outflow Connection: " + err.Error())
 	}
 
-	sagaManager, err := saga.NewManager(saga.Config{
-		SagaRepo:       repo,
+	sagaCommandHandler, err := saga.NewCommandHandler(saga.CommandHandlerConfig{
+		CommandChannel: payment_contract.PaymentServiceCommandChannel,
 		Producer:       mq.NewProducer(outflowConn),
 		Consumer:       mq.NewConsumer(inflowConn),
-		CommandChannel: payment_contract.PaymentServiceCommandChannel,
-		ReplyChannel:   payment_contract.PaymentServiceReplyChannel,
+		MessageRepo:    repo,
 	})
 	if err != nil {
-		log.Fatal("cannot create sagaManager:", err)
+		log.Fatal("cannot create sagaCommandHandler:", err)
 		panic(err)
 	}
 
-	appservice.HandleCommands(sagaManager, repo)
+	appservice.HandleCommands(sagaCommandHandler, repo)
 
-	go sagaManager.Serve()
+	go sagaCommandHandler.Serve()
 
-	paymentRestApiServer := rest.NewPaymentRestApiServer(log, repo, sagaManager)
+	paymentRestApiServer := rest.NewPaymentRestApiServer(log, repo, sagaCommandHandler)
 
 	err = paymentRestApiServer.Run()
 	if err != nil {

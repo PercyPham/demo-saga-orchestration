@@ -11,11 +11,9 @@ func (m *manager) serveHandlingReplies() {
 		panic("cannot handle saga replies: " + err.Error())
 	}
 	m.logf("Start receiving replies from MessageQueue channel: %s", m.replyChannel)
-	go func() {
-		for d := range replyChan {
-			go m.handleReplyDelivery(d)
-		}
-	}()
+	for d := range replyChan {
+		go m.handleReplyDelivery(d)
+	}
 }
 
 func (m *manager) handleReplyDelivery(d msg.Delivery) {

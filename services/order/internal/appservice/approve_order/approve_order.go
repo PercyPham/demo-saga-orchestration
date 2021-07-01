@@ -5,40 +5,28 @@ import (
 	"services.order/internal/domain"
 	"services.order_contract/order_reply"
 	"services.shared/apperror"
-	"services.shared/saga"
+	"services.shared/saga/msg"
 	"strconv"
-	"time"
 )
 
-func NewApproveOrderService(repo port.Repo, sm saga.Manager) *ApproveOrderService {
-	return &ApproveOrderService{repo, sm}
+func NewApproveOrderService(repo port.Repo) *ApproveOrderService {
+	return &ApproveOrderService{repo}
 }
 
 type ApproveOrderService struct {
-	repo        port.Repo
-	sagaManager saga.Manager
+	repo port.Repo
 }
 
-func (s *ApproveOrderService) ApproveOrder(orderID int64, commandID string) error {
+func (s *ApproveOrderService) ApproveOrder(orderID int64) (msg.Reply, error) {
 	order := s.repo.FindOrderByID(orderID)
 	if order == nil {
-		return apperror.New("cannot find order with id "+strconv.FormatInt(orderID, 10))
+		return nil, apperror.New("cannot find order with id " + strconv.FormatInt(orderID, 10))
 	}
+
 	order.Status = domain.OrderStatusApproved
 	if err := s.repo.UpdateOrder(order); err != nil {
-		return apperror.Wrap(err, "update order")
+		return nil, apperror.Wrap(err, "update order")
 	}
 
-	go s.replyOrderApproved(commandID)
-
-	return nil
-}
-
-// TODO: this is hot fix, need to have immediate saga reply, re-implement later
-func (s *ApproveOrderService) replyOrderApproved(commandID string) {
-	time.Sleep(1000)
-	err := s.sagaManager.ReplySuccess(commandID, order_reply.NewOrderApprovedReply())
-	if err != nil {
-		panic(apperror.Wrap(err, "reply OrderApproved"))
-	}
+	return order_reply.NewOrderApprovedReply(), nil
 }

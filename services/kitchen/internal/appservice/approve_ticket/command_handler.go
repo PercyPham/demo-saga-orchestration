@@ -4,21 +4,24 @@ import (
 	"services.kitchen/internal/appservice/port"
 	"services.shared/apperror"
 	"services.shared/saga"
-	"services.shared/saga/msg"
 	"strconv"
 )
 
-func ApproveTicketCommandHandler(repo port.Repo, sm saga.Manager) func(command msg.Command) error {
-	return func(command msg.Command) error {
-		approveTickerService := NewApproveTicketService(repo, sm)
-		orderID, err := strconv.ParseInt(command.Payload(), 10, 64)
+func ApproveTicketCommandHandler(repo port.Repo) func(saga.HandlerContext) error {
+	return func(c saga.HandlerContext) error {
+		approveTickerService := NewApproveTicketService(repo)
+		orderID, err := strconv.ParseInt(c.Command.Payload(), 10, 64)
 		if err != nil {
 			return apperror.Wrap(err, "get orderID from payload")
 		}
 
-		err = approveTickerService.ApproveTicket(orderID)
+		reply, err := approveTickerService.ApproveTicket(orderID)
 		if err != nil {
 			return apperror.Wrap(err, "approve ticket")
+		}
+
+		if err := c.ReplySuccess(reply); err != nil {
+			return apperror.Wrap(err, "send reply")
 		}
 
 		return nil

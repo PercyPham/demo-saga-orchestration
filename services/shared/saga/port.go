@@ -33,10 +33,14 @@ type Repo interface {
 	UpdateSaga(*Saga) error
 	FindSagaByID(id string) *Saga
 
-	CreateProcessedMessage(msg.Message) error
-	GetProcessedMessageByID(id string) msg.Message
+	MessageRepo
 
 	BeginTransaction() Transaction
+}
+
+type MessageRepo interface {
+	CreateProcessedMessage(msg.Message) error
+	GetProcessedMessageByID(id string) msg.Message
 }
 
 // Transaction defines methods related to transaction

@@ -9,10 +9,10 @@ import (
 	"services.shared/saga/msg"
 )
 
-func AuthorizePaymentCommandHandler(repo port.Repo, sagaManager saga.Manager) func(msg.Command) error {
-	return func(command msg.Command) error {
-		service := NewAuthorizePaymentService(repo, sagaManager)
-		input, err := extractAuthorizePaymentInputFromCommand(command)
+func AuthorizePaymentCommandHandler(repo port.Repo, ch saga.CommandHandler) func( saga.HandlerContext) error {
+	return func(c  saga.HandlerContext) error {
+		service := NewAuthorizePaymentService(repo, ch)
+		input, err := extractAuthorizePaymentInputFromCommand(c.Command)
 		if err != nil {
 			return apperror.Wrap(err, "extract AuthorizePaymentInput from command")
 		}

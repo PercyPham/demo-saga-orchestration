@@ -13,16 +13,16 @@ import (
 	"services.shared/saga"
 )
 
-func NewPaymentRestApiServer(log logger.Logger, repo port.Repo, sagaManager saga.Manager) *PaymentRestApiServer {
+func NewPaymentRestApiServer(log logger.Logger, repo port.Repo, sagaCmdHandler saga.CommandHandler) *PaymentRestApiServer {
 	responder := rest_response.New(log)
 	responder.SetLogTrace(config.App().ENV == "development")
-	return &PaymentRestApiServer{responder, repo, sagaManager}
+	return &PaymentRestApiServer{responder, repo, sagaCmdHandler}
 }
 
 type PaymentRestApiServer struct {
-	response    rest_response.Responder
-	repo        port.Repo
-	sagaManager saga.Manager
+	response       rest_response.Responder
+	repo           port.Repo
+	sagaCmdHandler saga.CommandHandler
 }
 
 func (s *PaymentRestApiServer) Run() error {

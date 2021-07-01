@@ -7,6 +7,6 @@ import (
 	"services.shared/saga"
 )
 
-func HandleCommands(sm saga.Manager, repo port.Repo) {
-	sm.Handle(payment_command.AuthorizePayment, authorize_payment.AuthorizePaymentCommandHandler(repo, sm))
+func HandleCommands(ch saga.CommandHandler, repo port.Repo) {
+	ch.Handle(payment_command.AuthorizePayment, authorize_payment.AuthorizePaymentCommandHandler(repo, ch))
 }

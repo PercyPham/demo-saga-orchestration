@@ -9,13 +9,13 @@ import (
 	"strconv"
 )
 
-func NewRejectTicketService(r port.Repo, sagaManager saga.Manager) *RejectTicketService {
-	return &RejectTicketService{r, sagaManager}
+func NewRejectTicketService(r port.Repo, sagaCmdHandler saga.CommandHandler) *RejectTicketService {
+	return &RejectTicketService{r, sagaCmdHandler}
 }
 
 type RejectTicketService struct {
-	repo        port.Repo
-	sagaManager saga.Manager
+	repo           port.Repo
+	sagaCmdHandler saga.CommandHandler
 }
 
 func (s *RejectTicketService) RejectTicketWithOrderID(orderID int64) error {
@@ -39,7 +39,7 @@ func (s *RejectTicketService) RejectTicketWithOrderID(orderID int64) error {
 	}
 
 	ticketRejectedReply := kitchen_reply.NewTicketRejectedReply()
-	err := s.sagaManager.ReplyFailure(ticket.CommandID, ticketRejectedReply)
+	err := s.sagaCmdHandler.ReplyFailure(ticket.CommandID, ticketRejectedReply)
 	if err != nil {
 		return apperror.Wrap(err, "reply to command")
 	}

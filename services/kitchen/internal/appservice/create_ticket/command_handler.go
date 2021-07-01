@@ -5,15 +5,16 @@ import (
 	"services.kitchen/internal/appservice/port"
 	"services.kitchen/internal/domain"
 	"services.kitchen_contract/kitchen_command"
+	"services.shared/saga"
 
 	"services.shared/apperror"
 	"services.shared/saga/msg"
 )
 
-func CreateTicketCommandHandler(repo port.Repo) func(command msg.Command) error {
-	return func(command msg.Command) error {
+func CreateTicketCommandHandler(repo port.Repo) func(saga.HandlerContext) error {
+	return func(c saga.HandlerContext) error {
 		createTickerService := NewCreateTicketService(repo)
-		input, err := extractCreateTicketInputFromCommand(command)
+		input, err := extractCreateTicketInputFromCommand(c.Command)
 		if err != nil {
 			return apperror.Wrap(err, "extract CreateTicketInput from command")
 		}

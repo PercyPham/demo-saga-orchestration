@@ -11,16 +11,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewKitchenRestApiServer(log logger.Logger, repo port.Repo, sagaManager saga.Manager) *KitchenRestApiServer {
+func NewKitchenRestApiServer(log logger.Logger, repo port.Repo, sagaCmdHandler saga.CommandHandler) *KitchenRestApiServer {
 	responder := rest_response.New(log)
 	responder.SetLogTrace(config.App().ENV == "development")
-	return &KitchenRestApiServer{responder, repo, sagaManager}
+	return &KitchenRestApiServer{responder, repo, sagaCmdHandler}
 }
 
 type KitchenRestApiServer struct {
-	response    rest_response.Responder
-	repo        port.Repo
-	sagaManager saga.Manager
+	response       rest_response.Responder
+	repo           port.Repo
+	sagaCmdHandler saga.CommandHandler
 }
 
 func (s *KitchenRestApiServer) Run() error {

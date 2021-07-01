@@ -5,31 +5,26 @@ import (
 	"services.kitchen/internal/domain"
 	"services.kitchen_contract/kitchen_reply"
 	"services.shared/apperror"
-	"services.shared/saga"
+	"services.shared/saga/msg"
 	"strconv"
 )
 
-func NewApproveTicketService(repo port.Repo, sagaManager saga.Manager) *ApproveTicketService {
-	return &ApproveTicketService{repo, sagaManager}
+func NewApproveTicketService(repo port.Repo) *ApproveTicketService {
+	return &ApproveTicketService{repo}
 }
 
 type ApproveTicketService struct {
 	repo        port.Repo
-	sagaManager saga.Manager
 }
 
-func (s *ApproveTicketService) ApproveTicket(orderID int64) error {
+func (s *ApproveTicketService) ApproveTicket(orderID int64) (msg.Reply, error) {
 	ticket := s.repo.FindTicketByOrderID(orderID)
 	if ticket == nil {
-		return apperror.New("cannot find ticket with order id " + strconv.FormatInt(orderID, 10))
+		return nil, apperror.New("cannot find ticket with order id " + strconv.FormatInt(orderID, 10))
 	}
 	ticket.Status = domain.TicketStatusApproved
 	if err := s.repo.UpdateTicket(ticket); err != nil {
-		return apperror.Wrap(err, "update ticket")
+		return nil, apperror.Wrap(err, "update ticket")
 	}
-	err := s.sagaManager.ReplySuccess(ticket.CommandID, kitchen_reply.NewTicketApprovedReply())
-	if err != nil {
-		return apperror.Wrap(err, "reply TicketApproved")
-	}
-	return nil
+	return kitchen_reply.NewTicketApprovedReply(), nil
 }

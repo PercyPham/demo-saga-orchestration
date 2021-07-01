@@ -17,7 +17,7 @@ func (s *KitchenRestApiServer) acceptTicket(c *gin.Context) {
 		s.response.Error(c, appErr)
 		return
 	}
-	acceptTicketService := accept_ticket.NewAcceptTicketService(s.repo, s.sagaManager)
+	acceptTicketService := accept_ticket.NewAcceptTicketService(s.repo, s.sagaCmdHandler)
 	if err := acceptTicketService.AcceptTicketWithOrderID(orderID); err != nil {
 		s.response.Error(c, apperror.Wrap(err, "accept ticket"))
 		return
