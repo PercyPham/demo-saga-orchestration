@@ -18,6 +18,7 @@ type Order struct {
 const (
 	OrderStatusPending  = "PENDING"
 	OrderStatusApproved = "APPROVED"
+	OrderStatusRejected = "REJECTED"
 )
 
 type OrderLineItem struct {
