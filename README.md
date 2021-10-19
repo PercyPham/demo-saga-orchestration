@@ -1,3 +1,3 @@
-# XemMenu - Backend
+# Demo Saga Orchestration
 
-Backend for XemMenu.
+Read Saga pattern [here](https://microservices.io/patterns/data/saga.html).
